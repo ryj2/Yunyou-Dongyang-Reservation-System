@@ -1,0 +1,1654 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Serif SC', serif;
+    line-height: 1.6;
+    color: #2c3e50;
+    overflow-x: hidden;
+    background: #f8f6f0;
+}
+
+/* 古风色彩变量 */
+:root {
+    --ancient-gold: #d4af37;
+    --ancient-red: #c8102e;
+    --ancient-green: #228b22;
+    --ancient-blue: #4682b4;
+    --ancient-brown: #8b4513;
+    --ancient-cream: #f5f5dc;
+    --ancient-dark: #2f4f4f;
+    --ancient-light: #f8f6f0;
+}
+
+/* 加载屏幕 - 古风版 */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(200, 16, 46, 0.1) 0%, transparent 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+    color: var(--ancient-cream);
+}
+
+.ancient-logo {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+}
+
+.ancient-title {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 3rem;
+    font-weight: 400;
+    letter-spacing: 4px;
+    margin-bottom: 0.5rem;
+    color: var(--ancient-gold);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.ancient-subtitle {
+    font-size: 1.2rem;
+    color: var(--ancient-cream);
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+.ancient-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(212, 175, 55, 0.3);
+    border-top: 4px solid var(--ancient-gold);
+    border-radius: 50%;
+    animation: ancientSpin 2s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes ancientSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: var(--ancient-cream);
+    opacity: 0.8;
+}
+
+/* 导航栏 - 古风版 */
+.ancient-nav {
+    background: rgba(248, 246, 240, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--ancient-gold);
+    box-shadow: 0 2px 20px rgba(212, 175, 55, 0.2);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--ancient-red);
+}
+
+.logo-icon {
+    margin-right: 12px;
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+}
+
+.logo-text {
+    letter-spacing: 2px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2.5rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--ancient-dark);
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--ancient-red);
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: var(--ancient-gold);
+    border-radius: 2px;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ancient-dark);
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.nav-user:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--ancient-red);
+}
+
+.nav-user i {
+    font-size: 1.5rem;
+}
+
+/* 英雄区域 - 古风版 */
+.ancient-hero {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--ancient-cream);
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+    background-image: 
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path fill="rgba(212,175,55,0.1)" d="M0,1000 Q250,800 500,900 T1000,800 L1000,1000 Z"/></svg>'),
+        radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(200, 16, 46, 0.1) 0%, transparent 50%);
+}
+
+.ancient-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        repeating-linear-gradient(45deg, transparent, transparent 100px, rgba(212, 175, 55, 0.03) 100px, rgba(212, 175, 55, 0.03) 102px);
+    animation: patternMove 20s linear infinite;
+}
+
+@keyframes patternMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(100px); }
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    padding: 0 2rem;
+}
+
+.ancient-title-main {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 4.5rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    color: var(--ancient-gold);
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+    letter-spacing: 3px;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    0% { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.3); }
+    100% { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 175, 55, 0.6); }
+}
+
+.ancient-subtitle-main {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+    opacity: 0.95;
+    color: var(--ancient-cream);
+    letter-spacing: 1px;
+}
+
+.ancient-stats {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    margin-bottom: 3rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 15px;
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.stat-number {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 2.8rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    color: var(--ancient-gold);
+}
+
+.stat-label {
+    font-size: 1rem;
+    opacity: 0.9;
+    color: var(--ancient-cream);
+}
+
+.ancient-button {
+    background: linear-gradient(45deg, var(--ancient-red), #e74c3c);
+    color: var(--ancient-cream);
+    border: 2px solid var(--ancient-gold);
+    padding: 1.2rem 3rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(200, 16, 46, 0.4);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.ancient-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(200, 16, 46, 0.6);
+    border-color: var(--ancient-gold);
+}
+
+.ancient-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.ancient-button:hover::before {
+    left: 100%;
+}
+
+.button-decoration {
+    font-size: 1.2rem;
+}
+
+/* 容器 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* 章节标题 - 古风版 */
+.ancient-section-title {
+    text-align: center;
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 3rem;
+    font-weight: 400;
+    margin-bottom: 4rem;
+    color: var(--ancient-red);
+    position: relative;
+    letter-spacing: 2px;
+}
+
+.ancient-section-title::before,
+.ancient-section-title::after {
+    content: '❋';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ancient-gold);
+    font-size: 2rem;
+}
+
+.ancient-section-title::before {
+    left: -60px;
+}
+
+.ancient-section-title::after {
+    right: -60px;
+}
+
+/* 特色功能 - 古风版 */
+.ancient-features {
+    padding: 6rem 0;
+    background: var(--ancient-light);
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(200, 16, 46, 0.05) 0%, transparent 50%);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+}
+
+.ancient-card {
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ancient-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    transform: scale(0);
+    transition: transform 0.5s ease;
+}
+
+.ancient-card:hover::before {
+    transform: scale(1);
+}
+
+.ancient-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    border-color: var(--ancient-gold);
+}
+
+.ancient-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(45deg, var(--ancient-gold), #f1c40f);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    color: white;
+    font-size: 3rem;
+    border: 3px solid var(--ancient-red);
+    position: relative;
+    z-index: 1;
+}
+
+.ancient-card h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--ancient-red);
+    position: relative;
+    z-index: 1;
+}
+
+.ancient-card p {
+    color: var(--ancient-dark);
+    line-height: 1.8;
+    position: relative;
+    z-index: 1;
+}
+
+/* 模态框 - 古风版 */
+.ancient-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.ancient-modal-content {
+    background: var(--ancient-light);
+    margin: 3% auto;
+    padding: 0;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+    border: 3px solid var(--ancient-gold);
+    animation: ancientModalSlideIn 0.4s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.ancient-modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(200, 16, 46, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+@keyframes ancientModalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-80px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.ancient-modal-header {
+    padding: 2.5rem 2.5rem 1.5rem;
+    border-bottom: 2px solid var(--ancient-gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(212, 175, 55, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.ancient-modal-header h2 {
+    color: var(--ancient-red);
+    font-family: 'Ma Shan Zheng', cursive;
+    font-weight: 400;
+    font-size: 2rem;
+    letter-spacing: 1px;
+}
+
+.close {
+    color: var(--ancient-red);
+    font-size: 2.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close:hover {
+    color: var(--ancient-gold);
+    background: rgba(200, 16, 46, 0.1);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 2.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.booking-step {
+    display: none;
+}
+
+.booking-step.active {
+    display: block;
+}
+
+.booking-step h3 {
+    margin-bottom: 2rem;
+    color: var(--ancient-red);
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+/* 日期选择器 - 古风版 */
+.ancient-date-picker input {
+    width: 100%;
+    padding: 1.2rem;
+    border: 2px solid var(--ancient-gold);
+    border-radius: 15px;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--ancient-dark);
+    font-family: 'Noto Serif SC', serif;
+}
+
+.ancient-date-picker input:focus {
+    outline: none;
+    border-color: var(--ancient-red);
+    box-shadow: 0 0 15px rgba(200, 16, 46, 0.2);
+}
+
+/* 时间段选择 - 古风版 */
+.time-slots h4 {
+    margin-bottom: 1.5rem;
+    color: var(--ancient-dark);
+    font-size: 1.2rem;
+}
+
+.time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.ancient-time-slot {
+    padding: 1.5rem;
+    border: 2px solid var(--ancient-gold);
+    background: white;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.ancient-time-slot:hover {
+    border-color: var(--ancient-red);
+    background: rgba(200, 16, 46, 0.05);
+    transform: translateY(-2px);
+}
+
+.ancient-time-slot.selected {
+    border-color: var(--ancient-red);
+    background: var(--ancient-red);
+    color: white;
+}
+
+.time-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.time-status {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* 票种选择 */
+.ticket-types {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.ticket-types.compact {
+    gap: 1rem;
+}
+
+.ticket-type {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border: 2px solid var(--ancient-gold);
+    border-radius: 15px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.ticket-type.compact {
+    padding: 1rem;
+}
+
+.ticket-type:hover {
+    border-color: var(--ancient-red);
+    background: rgba(200, 16, 46, 0.02);
+}
+
+.ticket-info h4 {
+    color: var(--ancient-red);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ticket-type.compact .ticket-info h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.ticket-info p {
+    color: var(--ancient-dark);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.ticket-type.compact .ticket-info p {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+.ticket-price {
+    color: var(--ancient-gold);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.ticket-type.compact .ticket-price {
+    font-size: 1.2rem;
+}
+
+.ticket-counter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.counter-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--ancient-gold);
+    background: white;
+    color: var(--ancient-red);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.counter-btn:hover {
+    background: var(--ancient-gold);
+    color: white;
+}
+
+.count {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--ancient-red);
+    min-width: 30px;
+    text-align: center;
+}
+
+.total-info {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.total-info p {
+    font-size: 1.2rem;
+    color: var(--ancient-red);
+    font-weight: 600;
+}
+
+/* 表单组 */
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.8rem;
+    color: var(--ancient-dark);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 1.2rem;
+    border: 2px solid var(--ancient-gold);
+    border-radius: 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--ancient-dark);
+    font-family: 'Noto Serif SC', serif;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--ancient-red);
+    box-shadow: 0 0 15px rgba(200, 16, 46, 0.2);
+}
+
+/* 重要提醒 */
+.important-notice {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px solid #ffc107;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.important-notice h4 {
+    color: #e67e22;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.important-notice ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.important-notice li {
+    margin-bottom: 0.8rem;
+    color: var(--ancient-dark);
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.important-notice li::before {
+    content: '•';
+    color: #e67e22;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* 按钮样式 */
+.form-actions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: flex-end;
+}
+
+.ancient-button-secondary {
+    background: white;
+    color: var(--ancient-red);
+    border: 2px solid var(--ancient-gold);
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.ancient-button-secondary:hover {
+    background: var(--ancient-gold);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* 登录表单 */
+.login-form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.verification-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.verification-group input {
+    flex: 1;
+}
+
+.send-code-btn {
+    background: var(--ancient-gold);
+    color: white;
+    border: none;
+    padding: 1.2rem 1.5rem;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.send-code-btn:hover {
+    background: var(--ancient-red);
+    transform: translateY(-2px);
+}
+
+.login-agreement {
+    margin: 1.5rem 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    cursor: pointer;
+    color: var(--ancient-dark);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.login-btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* 排队系统 */
+.queue-info {
+    text-align: center;
+}
+
+.queue-animation {
+    margin-bottom: 2rem;
+}
+
+.queue-people {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.person {
+    font-size: 3rem;
+    opacity: 0.3;
+    transition: all 0.5s ease;
+}
+
+.person.active {
+    opacity: 1;
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 10px var(--ancient-gold));
+}
+
+.queue-status h3 {
+    color: var(--ancient-red);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.queue-status p {
+    color: var(--ancient-dark);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+#queue-count {
+    color: var(--ancient-red);
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+#queue-time {
+    color: var(--ancient-gold);
+    font-weight: bold;
+}
+
+.queue-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px solid #ffc107;
+    border-radius: 15px;
+    padding: 1rem;
+    margin: 2rem 0;
+}
+
+.queue-warning p {
+    color: #e67e22;
+    font-weight: 600;
+    margin: 0;
+}
+
+.queue-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.queue-btn {
+    padding: 1rem 2rem;
+    border: 2px solid var(--ancient-gold);
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.know-btn {
+    background: white;
+    color: var(--ancient-red);
+}
+
+.know-btn:hover {
+    background: var(--ancient-red);
+    color: white;
+}
+
+.wait-btn {
+    background: var(--ancient-gold);
+    color: white;
+}
+
+.wait-btn:hover {
+    background: var(--ancient-red);
+}
+
+/* 消息提示 - 古风版 */
+.ancient-toast {
+    position: fixed;
+    top: 120px;
+    right: 20px;
+    background: var(--ancient-dark);
+    color: var(--ancient-cream);
+    padding: 1.2rem 2rem;
+    border-radius: 15px;
+    border: 2px solid var(--ancient-gold);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    transform: translateX(400px);
+    transition: transform 0.4s ease;
+    z-index: 3000;
+    max-width: 350px;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.ancient-toast.show {
+    transform: translateX(0);
+}
+
+.ancient-toast.error {
+    background: var(--ancient-red);
+    border-color: #c0392b;
+}
+
+.ancient-toast.success {
+    background: var(--ancient-green);
+    border-color: #27ae60;
+}
+
+.ancient-toast.warning {
+    background: #f39c12;
+    color: white;
+    border-color: #e67e22;
+}
+
+/* 支付相关样式 */
+.order-info {
+    background: rgba(212, 175, 55, 0.1);
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    border: 2px solid var(--ancient-gold);
+}
+
+.order-info h3 {
+    margin-bottom: 1rem;
+    color: var(--ancient-red);
+    font-weight: 600;
+    font-family: 'Ma Shan Zheng', cursive;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-item.total {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--ancient-red);
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--ancient-gold);
+}
+
+.price {
+    color: var(--ancient-red);
+    font-weight: 700;
+}
+
+.payment-countdown {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px solid #ffc107;
+    padding: 1rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.payment-countdown p {
+    margin: 0;
+    color: #e67e22;
+    font-weight: 500;
+}
+
+#countdown {
+    font-weight: 700;
+    color: var(--ancient-red);
+    font-size: 1.2rem;
+}
+
+.payment-methods h4 {
+    margin-bottom: 1rem;
+    color: var(--ancient-red);
+    font-weight: 600;
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.payment-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    border: 2px solid var(--ancient-gold);
+    background: white;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.payment-btn:hover {
+    border-color: var(--ancient-red);
+    background: rgba(200, 16, 46, 0.05);
+    transform: translateY(-2px);
+}
+
+.payment-btn i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--ancient-gold);
+}
+
+.payment-btn:hover i {
+    color: var(--ancient-red);
+}
+
+/* 紧凑预约界面样式 */
+.compact-booking .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.compact-booking .modal-body {
+    padding: 1rem;
+}
+
+.compact-booking .booking-step h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+}
+
+.compact-booking .form-group {
+    margin-bottom: 0.8rem;
+}
+
+.compact-booking .form-group label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.compact-booking .form-group input,
+.compact-booking .form-group select {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.compact-booking .ticket-types {
+    gap: 0.8rem;
+}
+
+.compact-booking .ticket-type {
+    padding: 0.8rem;
+    flex-direction: row;
+    align-items: center;
+}
+
+.compact-booking .ticket-info {
+    flex: 1;
+}
+
+.compact-booking .ticket-info h4 {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+}
+
+.compact-booking .ticket-info p {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+}
+
+.compact-booking .ticket-price {
+    font-size: 1.1rem;
+}
+
+.compact-booking .total-info {
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.compact-booking .total-info p {
+    font-size: 1rem;
+}
+
+.compact-booking .important-notice {
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.compact-booking .important-notice h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.compact-booking .important-notice li {
+    margin-bottom: 0.2rem;
+    font-size: 0.8rem;
+    padding-left: 1rem;
+}
+
+.compact-booking .order-info {
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.compact-booking .order-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.compact-booking .order-item {
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+}
+
+.compact-booking .payment-countdown {
+    padding: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.compact-booking .payment-countdown p {
+    font-size: 0.9rem;
+}
+
+.compact-booking .payment-methods h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.compact-booking .payment-options {
+    gap: 0.5rem;
+}
+
+.compact-booking .payment-btn {
+    padding: 0.8rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.compact-booking .payment-btn i {
+    font-size: 1.5rem;
+}
+
+.compact-booking .form-actions {
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+}
+
+.compact-booking .ancient-button,
+.compact-booking .ancient-button-secondary {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+}
+
+/* AI客服样式 */
+.ai-service-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(45deg, var(--ancient-gold), #f1c40f);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1500;
+    border: 3px solid var(--ancient-red);
+    animation: float 3s ease-in-out infinite;
+}
+
+.ai-service-float:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 12px 35px rgba(212, 175, 55, 0.6);
+}
+
+.service-icon {
+    font-size: 1.8rem;
+    margin-bottom: 2px;
+}
+
+.service-text {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--ancient-red);
+    font-family: 'Noto Serif SC', serif;
+}
+
+.ai-service-chat {
+    position: fixed;
+    bottom: 120px;
+    right: 30px;
+    width: 350px;
+    height: 500px;
+    background: var(--ancient-light);
+    border-radius: 20px;
+    border: 3px solid var(--ancient-gold);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    z-index: 1600;
+    transform: translateY(100px) scale(0.8);
+    opacity: 0;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-service-chat.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.chat-header {
+    background: linear-gradient(45deg, var(--ancient-gold), #f1c40f);
+    color: white;
+    padding: 1rem;
+    border-radius: 17px 17px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.chat-icon {
+    font-size: 1.2rem;
+}
+
+.online-status {
+    background: var(--ancient-green);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    margin-left: 0.5rem;
+}
+
+.close-chat {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.close-chat:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background: white;
+}
+
+.message {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+}
+
+.message-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.bot-message .message-avatar {
+    background: var(--ancient-gold);
+}
+
+.user-message .message-avatar {
+    background: var(--ancient-blue);
+}
+
+.user-message {
+    flex-direction: row-reverse;
+}
+
+.message-content {
+    background: #f8f9fa;
+    padding: 0.8rem;
+    border-radius: 15px;
+    max-width: 80%;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.user-message .message-content {
+    background: var(--ancient-blue);
+    color: white;
+}
+
+.message-content p {
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.typing-indicator .message-content {
+    background: var(--ancient-gold);
+    color: white;
+}
+
+.typing-dots {
+    animation: typingDots 1.5s infinite;
+}
+
+@keyframes typingDots {
+    0%, 60%, 100% { opacity: 0; }
+    30% { opacity: 1; }
+}
+
+.quick-questions {
+    padding: 1rem;
+    background: rgba(212, 175, 55, 0.1);
+    border-top: 1px solid var(--ancient-gold);
+}
+
+.quick-questions h4 {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--ancient-red);
+}
+
+.quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.quick-btn {
+    background: white;
+    border: 1px solid var(--ancient-gold);
+    color: var(--ancient-red);
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quick-btn:hover {
+    background: var(--ancient-gold);
+    color: white;
+}
+
+.chat-input-area {
+    padding: 1rem;
+    background: var(--ancient-light);
+    border-top: 1px solid var(--ancient-gold);
+    border-radius: 0 0 17px 17px;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 0.8rem;
+    border: 2px solid var(--ancient-gold);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    outline: none;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.chat-input:focus {
+    border-color: var(--ancient-red);
+}
+
+.send-btn {
+    background: var(--ancient-gold);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.send-btn:hover {
+    background: var(--ancient-red);
+    transform: scale(1.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .nav-menu {
+        display: none;
+    }
+    
+    .process-steps {
+        flex-direction: column;
+    }
+    
+    .step-arrow {
+        transform: rotate(90deg);
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .ai-service-chat {
+        width: 90%;
+        right: 5%;
+        bottom: 100px;
+    }
+    
+    .ai-service-float {
+        width: 60px;
+        height: 60px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .service-icon {
+        font-size: 1.5rem;
+    }
+    
+    .service-text {
+        font-size: 0.5rem;
+    }
+    .payment-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 1rem;
+    }
+    
+    .payment-btn i {
+        margin-bottom: 0;
+    }
+    
+    .order-item {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .order-item span:last-child {
+        text-align: right;
+        font-weight: 600;
+    }
+    
+    .ticket-type {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .queue-actions {
+        flex-direction: column;
+    }
+    
+    .verification-group {
+        flex-direction: column;
+    }
+}
+
+/* 隐藏滚动条但保持功能 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--ancient-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--ancient-gold);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ancient-red);
+}
+
+/* 选择文本的颜色 */
+::selection {
+    background: var(--ancient-gold);
+    color: white;
+}
+
+::-moz-selection {
+    background: var(--ancient-gold);
+    color: white;
+}
