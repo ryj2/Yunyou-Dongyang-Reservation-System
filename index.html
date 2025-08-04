@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云游东洋 - 智慧景区预约系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="captcha-styles.css">
+    <link rel="stylesheet" href="compact-ticket-styles.css">
+    <link rel="stylesheet" href="ai-service-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="ancient-logo">🏔️</div>
+                <h2 class="ancient-title">云游东洋</h2>
+                <p class="ancient-subtitle">智慧预约 · 畅游山河</p>
+            </div>
+            <div class="loading-spinner ancient-spinner"></div>
+            <p class="loading-text">正在连接东洋统一账户系统...</p>
+        </div>
+    </div>
+
+    <!-- 主页面 -->
+    <div id="main-content" class="main-content" style="display: none;">
+        <!-- 导航栏 -->
+        <nav class="navbar ancient-nav">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <div class="logo-icon">🏔️</div>
+                    <span class="logo-text">云游东洋</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="#" class="nav-link active">首页</a>
+                    <a href="#" class="nav-link">景点介绍</a>
+                    <a href="#" class="nav-link">预约指南</a>
+                    <a href="#" class="nav-link">联系我们</a>
+                </div>
+                <div class="nav-user" onclick="showLoginModal()">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="user-status">未登录</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 英雄区域 -->
+        <section class="hero ancient-hero">
+            <div class="hero-background">
+                <div class="hero-overlay"></div>
+                <div class="ancient-pattern"></div>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-title ancient-title-main">探索东洋秘境</h1>
+                <p class="hero-subtitle ancient-subtitle-main">千里江山如画卷，一键预约览胜景</p>
+                <div class="hero-stats ancient-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">九九</div>
+                        <div class="stat-label">系统可靠</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">全天</div>
+                        <div class="stat-label">贴心服务</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">千万</div>
+                        <div class="stat-label">游客信赖</div>
+                    </div>
+                </div>
+                <button class="cta-button ancient-button" onclick="checkLoginAndBook()">
+                    <span class="button-text">立即预约</span>
+                    <span class="button-decoration">🎋</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 特色功能 -->
+        <section class="features ancient-features">
+            <div class="container">
+                <h2 class="section-title ancient-section-title">智慧预约系统特色</h2>
+                <div class="features-grid">
+                    <div class="feature-card ancient-card">
+                        <div class="feature-icon ancient-icon">
+                            ⚡
+                        </div>
+                        <h3>闪电预约</h3>
+                        <p>采用最新云计算技术，毫秒级响应，告别排队烦恼</p>
+                    </div>
+                    <div class="feature-card ancient-card">
+                        <div class="feature-icon ancient-icon">
+                            🛡️
+                        </div>
+                        <h3>安全保障</h3>
+                        <p>银行级安全加密，保护您的个人信息和支付安全</p>
+                    </div>
+                    <div class="feature-card ancient-card">
+                        <div class="feature-icon ancient-icon">
+                            📱
+                        </div>
+                        <h3>多端同步</h3>
+                        <p>手机、电脑、平板完美适配，随时随地轻松预约</p>
+                    </div>
+                    <div class="feature-card ancient-card">
+                        <div class="feature-icon ancient-icon">
+                            🎧
+                        </div>
+                        <h3>贴心服务</h3>
+                        <p>AI智能客服24小时在线，专业团队为您答疑解惑</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 登录模态框 -->
+    <div id="login-modal" class="modal ancient-modal">
+        <div class="modal-content ancient-modal-content">
+            <div class="modal-header ancient-modal-header">
+                <h2>东洋统一账户登录</h2>
+                <span class="close" onclick="closeLoginModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="login-form">
+                    <div class="form-group">
+                        <label>手机号码</label>
+                        <input type="text" id="login-phone" placeholder="请输入11位手机号码">
+                    </div>
+                    <div class="form-group">
+                        <label>验证码</label>
+                        <div class="verification-group">
+                            <input type="text" id="verification-code" placeholder="请输入验证码">
+                            <button class="send-code-btn" onclick="sendVerificationCode()">发送验证码</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 图片验证码 -->
+                    <div class="form-group" id="captcha-group" style="display: none;">
+                        <label>图片验证码</label>
+                        <div class="captcha-container">
+                            <div class="captcha-image" id="captcha-text">ABCD</div>
+                            <button type="button" class="refresh-captcha" onclick="refreshCaptcha()">🔄</button>
+                            <input type="text" id="captcha-input" placeholder="请输入验证码" style="flex: 1;">
+                        </div>
+                    </div>
+                    
+                    <!-- 滑动验证 -->
+                    <div class="form-group" id="slider-group" style="display: none;">
+                        <label>滑动验证</label>
+                        <div class="slider-captcha">
+                            <div class="slider-track">
+                                <div class="slider-thumb" id="slider-thumb">→</div>
+                                <div class="slider-text">请拖动滑块完成验证</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 人机验证 -->
+                    <div class="form-group" id="captcha-group" style="display: none;">
+                        <label>人机验证</label>
+                        <div class="captcha-container">
+                            <div class="captcha-image" id="captcha-display">
+                                <span id="captcha-text">8K9M</span>
+                            </div>
+                            <button type="button" class="refresh-captcha" onclick="refreshCaptcha()">🔄</button>
+                        </div>
+                        <input type="text" id="captcha-input" placeholder="请输入上方验证码">
+                    </div>
+                    
+                    <!-- 滑动验证 -->
+                    <div class="form-group" id="slider-group" style="display: none;">
+                        <label>安全验证</label>
+                        <div class="slider-captcha">
+                            <div class="slider-track">
+                                <div class="slider-thumb" id="slider-thumb">→</div>
+                                <span class="slider-text">请拖动滑块完成验证</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="login-agreement">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="agree-terms">
+                            <span class="checkmark"></span>
+                            我已阅读并同意《东洋统一账户服务协议》和《隐私政策》
+                        </label>
+                    </div>
+                    <button class="login-btn ancient-button" onclick="performLogin()">登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 排队模态框 -->
+    <div id="queue-modal" class="modal ancient-modal">
+        <div class="modal-content ancient-modal-content">
+            <div class="modal-header ancient-modal-header">
+                <h2>系统排队中</h2>
+            </div>
+            <div class="modal-body">
+                <div class="queue-info">
+                    <div class="queue-animation">
+                        <div class="queue-people">
+                            <div class="person active">👤</div>
+                            <div class="person">👤</div>
+                            <div class="person">👤</div>
+                            <div class="person">👤</div>
+                            <div class="person">👤</div>
+                        </div>
+                    </div>
+                    <div class="queue-status">
+                        <h3>当前排队人数较多，请耐心等待</h3>
+                        <p>前方还有 <span id="queue-count">2847</span> 人</p>
+                        <p>预计等待时间：<span id="queue-time">约15分钟</span></p>
+                    </div>
+                    <div class="queue-warning">
+                        <p>⚠️ 请勿刷新页面或关闭浏览器，否则需要重新排队</p>
+                    </div>
+                    <div class="queue-actions">
+                        <button class="queue-btn know-btn" onclick="giveUpQueue()">我知道了</button>
+                        <button class="queue-btn wait-btn" onclick="continueWaiting()">继续等待</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预约模态框 -->
+    <div id="booking-modal" class="modal ancient-modal">
+        <div class="modal-content ancient-modal-content">
+            <div class="modal-header ancient-modal-header">
+                <h2>景区预约</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="booking-step-1" class="booking-step active">
+                    <h3>选择预约日期</h3>
+                    <div class="date-picker ancient-date-picker compact">
+                        <input type="date" id="visit-date" min="" max="">
+                    </div>
+                    <div class="time-slots compact">
+                        <h4>选择时段</h4>
+                        <div class="time-grid compact">
+                            <button class="time-slot ancient-time-slot compact" data-time="09:00">
+                                <span class="time-text">09:00-11:00</span>
+                                <span class="time-status">余票充足</span>
+                            </button>
+                            <button class="time-slot ancient-time-slot compact" data-time="11:00">
+                                <span class="time-text">11:00-13:00</span>
+                                <span class="time-status">余票紧张</span>
+                            </button>
+                            <button class="time-slot ancient-time-slot compact" data-time="13:00">
+                                <span class="time-text">13:00-15:00</span>
+                                <span class="time-status">余票充足</span>
+                            </button>
+                            <button class="time-slot ancient-time-slot compact" data-time="15:00">
+                                <span class="time-text">15:00-17:00</span>
+                                <span class="time-status">余票紧张</span>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="next-btn ancient-button" onclick="nextStep()">下一步</button>
+                </div>
+
+                <div id="booking-step-2" class="booking-step">
+                    <h3>选择票种</h3>
+                    <div class="ticket-types compact">
+                        <div class="ticket-type compact" data-type="adult">
+                            <div class="ticket-info">
+                                <h4>成人票 <span class="ticket-price">¥128</span></h4>
+                                <p>18-59周岁成人</p>
+                            </div>
+                            <div class="ticket-counter">
+                                <button class="counter-btn" onclick="changeTicketCount('adult', -1)">-</button>
+                                <span class="count" id="adult-count">0</span>
+                                <button class="counter-btn" onclick="changeTicketCount('adult', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="ticket-type compact" data-type="child">
+                            <div class="ticket-info">
+                                <h4>儿童票 <span class="ticket-price">¥68</span></h4>
+                                <p>6-17周岁儿童</p>
+                            </div>
+                            <div class="ticket-counter">
+                                <button class="counter-btn" onclick="changeTicketCount('child', -1)">-</button>
+                                <span class="count" id="child-count">0</span>
+                                <button class="counter-btn" onclick="changeTicketCount('child', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="ticket-type compact" data-type="senior">
+                            <div class="ticket-info">
+                                <h4>老年票 <span class="ticket-price">¥88</span></h4>
+                                <p>60周岁以上老人</p>
+                            </div>
+                            <div class="ticket-counter">
+                                <button class="counter-btn" onclick="changeTicketCount('senior', -1)">-</button>
+                                <span class="count" id="senior-count">0</span>
+                                <button class="counter-btn" onclick="changeTicketCount('senior', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="total-info compact">
+                        <p>总计：<span id="total-tickets">0</span>张票，合计 <span id="total-price">¥0</span></p>
+                    </div>
+                    <div class="form-actions">
+                        <button class="prev-btn ancient-button-secondary" onclick="prevStep()">上一步</button>
+                        <button class="next-btn ancient-button" onclick="nextToInfo()">下一步</button>
+                    </div>
+                </div>
+
+                <div id="booking-step-3" class="booking-step">
+                    <h3>填写游客信息</h3>
+                    <div class="form-group">
+                        <label>主要联系人姓名</label>
+                        <input type="text" id="main-name" placeholder="请输入真实姓名">
+                    </div>
+                    <div class="form-group">
+                        <label>身份证号码</label>
+                        <input type="text" id="main-id" placeholder="请输入18位身份证号码">
+                    </div>
+                    <div class="form-group">
+                        <label>手机号码</label>
+                        <input type="text" id="main-phone" placeholder="请输入11位手机号码" readonly>
+                    </div>
+                    <div class="important-notice">
+                        <h4>⚠️ 重要提醒</h4>
+                        <ul>
+                            <li>请确保所填信息真实有效，入园时需核验身份证件</li>
+                            <li>儿童票需携带户口本或身份证等有效证件</li>
+                            <li>老年票需携带身份证等年龄证明</li>
+                            <li>预约成功后不可退改，请谨慎选择</li>
+                            <li>如遇恶劣天气，景区可能临时闭园</li>
+                        </ul>
+                    </div>
+                    <div class="form-actions">
+                        <button class="prev-btn ancient-button-secondary" onclick="prevStep()">上一步</button>
+                        <button class="next-btn ancient-button" onclick="submitBooking()">提交预约</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div id="message-toast" class="message-toast ancient-toast"></div>
+
+    <!-- 用户协议弹窗 -->
+    <div id="agreement-modal" class="modal ancient-modal">
+        <div class="modal-content ancient-modal-content" style="max-width: 600px; max-height: 80vh;">
+            <div class="modal-header ancient-modal-header">
+                <h2>用户服务协议与隐私政策</h2>
+                <span class="close" onclick="closeAgreementModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="agreement-content" id="agreement-content">
+                    <h3>一、服务条款</h3>
+                    <p>1.1 本协议是您与云游东洋景区预约系统之间关于使用本服务的法律协议。</p>
+                    <p>1.2 您在使用本服务前，应当认真阅读并充分理解本协议的全部内容。</p>
+                    <p>1.3 您点击"同意"按钮或以其他方式确认接受本协议，即表示您已充分阅读、理解并接受本协议的全部内容。</p>
+                    
+                    <h3>二、账户注册与使用</h3>
+                    <p>2.1 您需要注册账户才能使用本服务。注册时，您应当提供真实、准确、完整的个人信息。</p>
+                    <p>2.2 您应当妥善保管您的账户信息，不得将账户借给他人使用。</p>
+                    <p>2.3 如发现账户被盗用，您应当立即通知我们。</p>
+                    
+                    <h3>三、预约服务</h3>
+                    <p>3.1 预约服务仅限于景区门票预约，不包括其他服务。</p>
+                    <p>3.2 预约成功后，您需要按照预约时间到达景区，逾期视为自动放弃。</p>
+                    <p>3.3 景区有权根据天气、安全等因素调整开放时间或临时闭园。</p>
+                    <p>3.4 预约成功后原则上不可退改，特殊情况请联系客服。</p>
+                    
+                    <h3>四、用户行为规范</h3>
+                    <p>4.1 您不得利用本服务从事任何违法违规活动。</p>
+                    <p>4.2 您不得使用技术手段干扰本服务的正常运行。</p>
+                    <p>4.3 您不得恶意刷票或进行其他影响系统公平性的行为。</p>
+                    
+                    <h3>五、隐私保护</h3>
+                    <p>5.1 我们重视您的隐私保护，会采取合理措施保护您的个人信息安全。</p>
+                    <p>5.2 我们收集的个人信息仅用于提供预约服务，不会用于其他商业目的。</p>
+                    <p>5.3 除法律法规要求外，我们不会向第三方披露您的个人信息。</p>
+                    
+                    <h3>六、免责声明</h3>
+                    <p>6.1 本服务按"现状"提供，我们不对服务的连续性、稳定性做出保证。</p>
+                    <p>6.2 因不可抗力、系统维护等原因导致的服务中断，我们不承担责任。</p>
+                    <p>6.3 您因使用本服务产生的任何损失，我们仅在法律允许范围内承担责任。</p>
+                    
+                    <h3>七、协议变更</h3>
+                    <p>7.1 我们有权随时修改本协议，修改后的协议将在网站上公布。</p>
+                    <p>7.2 如您不同意修改后的协议，可以停止使用本服务。</p>
+                    <p>7.3 您继续使用本服务，视为接受修改后的协议。</p>
+                    
+                    <h3>八、争议解决</h3>
+                    <p>8.1 本协议的签订、履行、解释均适用中华人民共和国法律。</p>
+                    <p>8.2 因本协议产生的争议，双方应友好协商解决。</p>
+                    <p>8.3 协商不成的，提交有管辖权的人民法院解决。</p>
+                    
+                    <h3>九、其他条款</h3>
+                    <p>9.1 本协议自您确认接受之日起生效。</p>
+                    <p>9.2 本协议的任何条款无效，不影响其他条款的效力。</p>
+                    <p>9.3 本协议的最终解释权归云游东洋景区预约系统所有。</p>
+                    
+                    <div class="agreement-footer">
+                        <p><strong>请仔细阅读以上条款，滑动到底部后方可继续操作。</strong></p>
+                        <p>最后更新时间：2024年1月1日</p>
+                    </div>
+                </div>
+                <div class="agreement-actions">
+                    <div class="scroll-indicator">
+                        <span id="scroll-progress">请滑动阅读完整协议 (0%)</span>
+                    </div>
+                    <div class="agreement-buttons">
+                        <button class="disagree-btn ancient-button-secondary" onclick="disagreeAgreement()">不同意</button>
+                        <button class="agree-btn ancient-button" id="agree-btn" onclick="agreeAgreement()" disabled>同意并继续</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 抽签预约模态框 -->
+    <div id="lottery-modal" class="modal ancient-modal">
+        <div class="modal-content ancient-modal-content">
+            <div class="modal-header ancient-modal-header">
+                <h2>🎲 抽签预约</h2>
+                <span class="close" onclick="closeLotteryModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="lottery-info">
+                    <div class="lottery-notice">
+                        <h3>📢 抽签预约说明</h3>
+                        <ul>
+                            <li>由于预约火爆，系统启动公平抽签模式</li>
+                            <li>每人每日仅有一次抽签机会</li>
+                            <li>抽签结果将在3分钟后公布</li>
+                            <li>中签用户将获得优先预约资格</li>
+                            <li>未中签用户可选择继续排队或明日再试</li>
+                        </ul>
+                    </div>
+                    <div class="lottery-status" id="lottery-status">
+                        <div class="lottery-animation">
+                            <div class="lottery-ball">🎱</div>
+                            <p>点击下方按钮开始抽签</p>
+                        </div>
+                    </div>
+                    <div class="lottery-actions">
+                        <button class="lottery-btn ancient-button" onclick="startLottery()" id="start-lottery-btn">开始抽签</button>
+                        <button class="cancel-lottery-btn ancient-button-secondary" onclick="closeLotteryModal()">放弃抽签</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI客服浮动按钮 -->
+    <div class="ai-service-float" onclick="toggleAIService()">
+        <div class="service-icon">🤖</div>
+        <div class="service-text">AI客服</div>
+    </div>
+
+    <!-- AI客服聊天窗口 -->
+    <div id="ai-service-chat" class="ai-service-chat">
+        <div class="chat-header">
+            <div class="chat-title">
+                <span class="chat-icon">🤖</span>
+                <span>东洋智能客服小助手</span>
+                <span class="online-status">在线</span>
+            </div>
+            <button class="close-chat" onclick="closeAIService()">&times;</button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <p>您好！我是东洋智能客服小助手，很高兴为您服务！</p>
+                    <p>请问有什么可以帮助您的吗？</p>
+                </div>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <div class="quick-questions">
+                <button class="quick-btn" onclick="askQuickQuestion('预约失败')">预约失败怎么办？</button>
+                <button class="quick-btn" onclick="askQuickQuestion('支付问题')">支付遇到问题</button>
+                <button class="quick-btn" onclick="askQuickQuestion('退票')">如何退票？</button>
+                <button class="quick-btn" onclick="askQuickQuestion('联系人工')">转人工客服</button>
+            </div>
+            <div class="chat-input-box">
+                <input type="text" id="chat-input" placeholder="请输入您的问题..." onkeypress="handleChatKeyPress(event)">
+                <button class="send-btn" onclick="sendChatMessage()">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="enhanced-features.js"></script>
+    <script src="compact-ui.js"></script>
+    <script src="ai-service.js"></script>
+</body>
+</html>

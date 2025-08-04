@@ -1,0 +1,107 @@
+MIT License
+
+Copyright (c) 2024 云游东洋预约系统
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 特别声明
+
+### 项目性质
+本项目是一个讽刺性的互动体验项目，旨在通过夸张的用户体验来揭示和批评当前景区预约系统中存在的问题。项目纯属虚构，仅用于教育、研究和艺术表达目的。
+
+### 使用限制
+尽管本项目采用MIT开源许可证，但使用者需要遵守以下额外限制：
+
+1. **禁止商业用途**：本项目不得用于任何形式的商业目的，包括但不限于：
+   - 开发实际的预约系统
+   - 作为商业产品的一部分
+   - 用于盈利性活动
+
+2. **禁止恶意使用**：不得将本项目用于：
+   - 误导或欺骗用户
+   - 制造实际的技术障碍
+   - 损害他人利益的活动
+   - 违法违规行为
+
+3. **教育用途优先**：鼓励将本项目用于：
+   - 用户体验设计教学
+   - 技术伦理讨论
+   - 社会问题研究
+   - 艺术创作和表达
+
+### 免责声明
+
+1. **虚构性质**：本项目完全虚构，任何与真实景区预约系统的相似之处纯属巧合。
+
+2. **无担保声明**：作者不对使用本项目可能产生的任何直接或间接后果承担责任。
+
+3. **法律合规**：使用者有责任确保其使用方式符合当地法律法规。
+
+4. **技术风险**：使用者需自行承担使用本项目可能带来的技术风险。
+
+### 道德准则
+
+使用本项目时，请遵守以下道德准则：
+
+1. **尊重用户**：不得利用本项目的技术手段损害用户体验或权益。
+
+2. **诚实透明**：如果在教学或演示中使用本项目，应明确说明其讽刺性质。
+
+3. **建设性批评**：将本项目作为建设性批评的工具，而非恶意攻击的手段。
+
+4. **技术向善**：倡导技术应该服务于人类，改善而非恶化用户体验。
+
+### 版权信息
+
+- **代码版权**：本项目的源代码遵循MIT许可证
+- **设计版权**：界面设计和视觉元素的版权归项目作者所有
+- **字体版权**：使用的字体遵循各自的许可证条款
+- **图标版权**：使用的图标库遵循Font Awesome的许可证
+
+### 贡献者协议
+
+向本项目贡献代码或内容的贡献者，默认同意：
+
+1. 贡献的内容遵循本许可证的所有条款
+2. 理解并支持本项目的教育和讽刺目的
+3. 不会利用贡献的内容进行违法或不道德的活动
+4. 尊重其他贡献者和用户的权益
+
+### 联系方式
+
+如对本许可证有任何疑问或需要特殊授权，请通过以下方式联系：
+
+- GitHub Issues: 在项目页面提交问题
+
+
+### 许可证更新
+
+本许可证可能会根据项目发展需要进行更新。重大更新将通过以下方式通知：
+
+- 在项目README中发布公告
+- 通过Git提交记录标记重要变更
+- 在项目发布页面说明变更内容
+
+---
+
+**最后提醒：技术的力量应该用来创造更好的世界，而不是制造更多的障碍。让我们一起为更公平、更透明、更人性化的数字体验而努力！**
+
+*本许可证最后更新时间：2025年8月4日*
