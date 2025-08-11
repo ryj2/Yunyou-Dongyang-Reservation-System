@@ -212,6 +212,7 @@ python -m http.server 8000
 - **图标库**：Font Awesome
 - **设计灵感**：传统中华美学
 - **用户反馈**：所有体验过系统的用户
+- [![Netlify Status](https://api.netlify.com/api/v1/badges/5e47177b-0c80-458c-9c83-92599e94a912/deploy-status)](https://app.netlify.com/projects/yunyoudongyang/deploys)
 
 ---
 
@@ -219,4 +220,5 @@ python -m http.server 8000
 
 
 *让我们一起为更好的数字体验而努力！*
+
 
