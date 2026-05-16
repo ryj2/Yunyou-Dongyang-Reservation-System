@@ -1,0 +1,1177 @@
+/* ========================================
+   微信小程序组件样式
+   ======================================== */
+
+/* ========================================
+   Action Sheet 底部弹窗
+   ======================================== */
+.action-sheet {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: none;
+}
+
+.action-sheet.show {
+    display: block;
+}
+
+.action-sheet-mask {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.action-sheet-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--wechat-bg);
+    border-radius: 16px 16px 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+}
+
+.action-sheet-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--wechat-white);
+    border-radius: 16px 16px 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 0.5px solid var(--wechat-border);
+    position: sticky;
+    top: 0;
+    background: inherit;
+    z-index: 1;
+}
+
+.sheet-header h3 {
+    font-size: 17px;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+}
+
+.sheet-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--wechat-text-secondary);
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.sheet-btn {
+    background: none;
+    border: none;
+    font-size: 15px;
+    color: var(--wechat-text);
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.sheet-btn.primary {
+    color: var(--wechat-green);
+    font-weight: 600;
+}
+
+.sheet-body {
+    padding: 16px;
+}
+
+/* ========================================
+   日期选择网格
+   ======================================== */
+.date-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.date-item {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+}
+
+.date-item:active {
+    transform: scale(0.95);
+}
+
+.date-item.selected {
+    background: var(--wechat-green);
+    color: #fff;
+}
+
+.date-item.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.date-item.today {
+    border: 1.5px solid var(--wechat-green);
+}
+
+.date-day {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.date-weekday {
+    font-size: 10px;
+    margin-top: 2px;
+}
+
+/* ========================================
+   用户协议
+   ======================================== */
+.agreement-body {
+    padding: 16px;
+    max-height: 50vh;
+    overflow-y: auto;
+    line-height: 1.8;
+    font-size: 14px;
+    color: var(--wechat-text);
+}
+
+.agreement-body h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 16px 0 8px;
+    color: var(--wechat-text);
+}
+
+.agreement-body h4:first-child {
+    margin-top: 0;
+}
+
+.agreement-body p {
+    margin-bottom: 8px;
+    color: #666;
+}
+
+.agreement-end {
+    text-align: center;
+    color: var(--wechat-text-secondary) !important;
+    font-size: 12px;
+    padding: 16px 0;
+}
+
+.agreement-footer {
+    padding: 12px 16px;
+    border-top: 0.5px solid var(--wechat-border);
+}
+
+.scroll-progress {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    color: var(--wechat-text-secondary);
+    margin-bottom: 12px;
+}
+
+.agreement-btns {
+    display: flex;
+    gap: 12px;
+}
+
+.agreement-btns .btn-outline,
+.agreement-btns .btn-primary {
+    flex: 1;
+}
+
+/* ========================================
+   抽签系统
+   ======================================== */
+.lottery-notice {
+    background: #fff8e1;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #F57C00;
+}
+
+.lottery-notice p {
+    margin-bottom: 4px;
+}
+
+.lottery-notice p:last-child {
+    margin-bottom: 0;
+}
+
+.lottery-status {
+    text-align: center;
+    padding: 24px 0;
+}
+
+.lottery-ball-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.lottery-progress {
+    width: 100%;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 16px 0;
+}
+
+.lottery-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--wechat-green), #4CAF50);
+    border-radius: 3px;
+    transition: width 0.3s;
+    width: 0%;
+}
+
+.lottery-count {
+    font-size: 13px;
+    color: var(--wechat-text-secondary);
+    margin-top: 8px;
+}
+
+.lottery-result {
+    text-align: center;
+    padding: 16px 0;
+}
+
+.lottery-result-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.lottery-result h4 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.lottery-result-details {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+    text-align: left;
+}
+
+.lottery-result-details p {
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.lottery-result-tips {
+    background: #e8f5e9;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--wechat-green);
+}
+
+/* ========================================
+   支付系统
+   ======================================== */
+.payment-amount {
+    text-align: center;
+    padding: 16px 0;
+}
+
+.amount-label {
+    display: block;
+    font-size: 14px;
+    color: var(--wechat-text-secondary);
+    margin-bottom: 8px;
+}
+
+.amount-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--wechat-text);
+}
+
+.payment-countdown {
+    text-align: center;
+    font-size: 13px;
+    color: var(--wechat-danger);
+    padding: 8px 0 16px;
+}
+
+.payment-methods {
+    margin-bottom: 16px;
+}
+
+.payment-method {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 0.5px solid var(--wechat-border);
+    cursor: pointer;
+}
+
+.payment-method:last-child {
+    border-bottom: none;
+}
+
+.method-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 16px;
+    color: #fff;
+}
+
+.method-icon.wechat { background: #07C160; }
+.method-icon.alipay { background: #1677FF; }
+.method-icon.bank { background: #333; }
+.method-icon.dongyang {
+    background: linear-gradient(135deg, #d4af37, #f1c40f);
+    font-size: 18px;
+}
+
+.payment-method span {
+    flex: 1;
+    font-size: 15px;
+}
+
+.check-icon {
+    color: var(--wechat-green);
+    font-size: 20px;
+    opacity: 0.3;
+}
+
+.payment-method.selected .check-icon {
+    opacity: 1;
+}
+
+/* 支付处理动画 */
+.payment-processing {
+    text-align: center;
+    padding: 32px 0;
+}
+
+.payment-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid #e0e0e0;
+    border-top-color: var(--wechat-green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   社交动态流
+   ======================================== */
+.social-feed {
+    background: var(--wechat-white);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.feed-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wechat-text-secondary);
+    margin-bottom: 8px;
+}
+
+.feed-list {
+    max-height: 160px;
+    overflow: hidden;
+}
+
+.feed-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 12px;
+    animation: feedIn 0.3s ease-out;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+@keyframes feedIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feed-avatar {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.feed-text {
+    flex: 1;
+    color: var(--wechat-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.feed-text strong {
+    color: var(--wechat-text);
+}
+
+.feed-item.announcement {
+    color: var(--wechat-danger);
+}
+
+.feed-item.announcement .feed-text {
+    color: var(--wechat-danger);
+    font-weight: 500;
+}
+
+/* ========================================
+   成就系统
+   ======================================== */
+.achievement-grid {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.achievement-card {
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.achievement-card.unlocked {
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+    box-shadow: 0 2px 8px rgba(212,175,55,0.2);
+}
+
+.achievement-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    filter: grayscale(100%);
+    opacity: 0.4;
+    transition: all 0.3s;
+}
+
+.achievement-card.unlocked .achievement-icon {
+    filter: none;
+    opacity: 1;
+}
+
+.achievement-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.achievement-desc {
+    font-size: 11px;
+    color: var(--wechat-text-secondary);
+}
+
+/* 成就解锁Toast */
+.achievement-toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--wechat-white);
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 10001;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+}
+
+.achievement-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.achievement-toast-icon {
+    font-size: 28px;
+}
+
+.achievement-toast-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.achievement-toast-text strong {
+    font-size: 12px;
+    color: var(--wechat-text-secondary);
+}
+
+.achievement-toast-text span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--wechat-text);
+}
+
+/* ========================================
+   通关页面
+   ======================================== */
+.success-body {
+    padding: 24px 16px;
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 56px;
+    margin-bottom: 12px;
+}
+
+.success-body h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.success-details {
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.success-details .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 0.5px solid var(--wechat-border);
+}
+
+.success-details .detail-row:last-child {
+    border-bottom: none;
+}
+
+.reality-reveal {
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.reality-reveal h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #F57C00;
+}
+
+.reveal-stats {
+    margin-bottom: 12px;
+}
+
+.reveal-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+}
+
+.reveal-stat:last-child {
+    border-bottom: none;
+}
+
+.reveal-stat .label {
+    color: var(--wechat-text-secondary);
+}
+
+.reveal-stat .value {
+    font-weight: 600;
+    color: var(--wechat-danger);
+}
+
+.reality-text {
+    margin-top: 12px;
+}
+
+.reality-text p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+/* ========================================
+   AI客服
+   ======================================== */
+.ai-float-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--wechat-green);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(7,193,96,0.4);
+    z-index: 500;
+    transition: transform 0.2s;
+}
+
+.ai-float-btn:active {
+    transform: scale(0.9);
+}
+
+.ai-chat-panel {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 360px;
+    height: 500px;
+    background: var(--wechat-bg);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    z-index: 600;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ai-chat-panel.show {
+    display: flex;
+    animation: slideUp 0.3s ease-out;
+}
+
+.ai-chat-header {
+    background: var(--wechat-green);
+    color: #fff;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.ai-chat-header button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.ai-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.ai-msg {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.ai-msg.user {
+    flex-direction: row-reverse;
+}
+
+.ai-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.ai-msg.user .ai-avatar {
+    background: #e3f2fd;
+}
+
+.ai-bubble {
+    background: var(--wechat-white);
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 260px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.ai-msg.user .ai-bubble {
+    background: var(--wechat-green);
+    color: #fff;
+}
+
+.ai-chat-quick {
+    padding: 8px 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ai-chat-quick button {
+    background: var(--wechat-white);
+    border: 1px solid var(--wechat-border);
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--wechat-text);
+}
+
+.ai-chat-quick button:active {
+    background: #f0f0f0;
+}
+
+.ai-chat-input {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--wechat-white);
+    border-top: 0.5px solid var(--wechat-border);
+}
+
+.ai-chat-input input {
+    flex: 1;
+    height: 36px;
+    border: 1px solid var(--wechat-border);
+    border-radius: 18px;
+    padding: 0 14px;
+    font-size: 14px;
+    outline: none;
+}
+
+.ai-chat-input button {
+    background: var(--wechat-green);
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 0 16px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* ========================================
+   验证码游戏区域
+   ======================================== */
+.captcha-area {
+    background: var(--wechat-white);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.captcha-title {
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+/* 打地鼠 */
+.mole-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.mole-cell {
+    aspect-ratio: 1;
+    background: #f5f5f5;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+}
+
+.mole-cell:active {
+    transform: scale(0.9);
+}
+
+.mole-cell.target {
+    background: #e8f5e9;
+    animation: molePop 0.5s ease-out;
+}
+
+@keyframes molePop {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.mole-cell.hit {
+    background: var(--wechat-green);
+    color: #fff;
+}
+
+.mole-cell.wrong {
+    background: var(--wechat-danger);
+    color: #fff;
+}
+
+.captcha-hint {
+    text-align: center;
+    font-size: 14px;
+    color: var(--wechat-text-secondary);
+    margin-bottom: 12px;
+}
+
+.captcha-hint strong {
+    color: var(--wechat-text);
+    font-size: 16px;
+}
+
+/* 表情选择 */
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.emoji-cell {
+    aspect-ratio: 1;
+    background: #f5f5f5;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.emoji-cell:active {
+    transform: scale(0.9);
+}
+
+.emoji-cell.correct {
+    background: #e8f5e9;
+    box-shadow: 0 0 0 2px var(--wechat-green);
+}
+
+.emoji-cell.wrong {
+    background: #ffebee;
+}
+
+/* 古诗词选择 */
+.poetry-question {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 16px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.poetry-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.poetry-option {
+    padding: 14px 16px;
+    background: var(--wechat-white);
+    border: 1.5px solid var(--wechat-border);
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.poetry-option:active {
+    transform: scale(0.98);
+}
+
+.poetry-option.correct {
+    border-color: var(--wechat-green);
+    background: #e8f5e9;
+}
+
+.poetry-option.wrong {
+    border-color: var(--wechat-danger);
+    background: #ffebee;
+}
+
+/* 拼图验证码 */
+.puzzle-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.5;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.puzzle-piece {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.3);
+    border: 2px dashed rgba(255,255,255,0.6);
+    border-radius: 8px;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    user-select: none;
+    transition: box-shadow 0.2s;
+}
+
+.puzzle-piece:active {
+    cursor: grabbing;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.puzzle-target {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 2px dashed rgba(255,255,255,0.4);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+}
+
+/* ========================================
+   验证码旧样式兼容（保持原有功能）
+   ======================================== */
+.captcha-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.captcha-image {
+    background: #f0f0f0;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    font-family: monospace;
+    color: #333;
+    user-select: none;
+}
+
+.refresh-captcha {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.slider-captcha {
+    margin-bottom: 12px;
+}
+
+.slider-track {
+    height: 40px;
+    background: #e0e0e0;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.slider-thumb {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--wechat-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    cursor: grab;
+    z-index: 1;
+}
+
+.slider-thumb.success {
+    background: var(--wechat-green);
+}
+
+.slider-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #999;
+}
+
+.math-captcha {
+    text-align: center;
+    padding: 16px 0;
+}
+
+.math-question {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.math-input {
+    width: 120px;
+    height: 44px;
+    border: 1px solid var(--wechat-border);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    outline: none;
+}
+
+.math-input:focus {
+    border-color: var(--wechat-green);
+}
+
+/* ========================================
+   验证码通知弹窗
+   ======================================== */
+.code-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--wechat-white);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    z-index: 10000;
+    text-align: center;
+    min-width: 240px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.code-notification.show {
+    opacity: 1;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.close-notification {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--wechat-text-secondary);
+    cursor: pointer;
+}
+
+.verification-code {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--wechat-green);
+    margin-bottom: 12px;
+    font-family: monospace;
+}
+
+.notification-text {
+    font-size: 13px;
+    color: var(--wechat-text-secondary);
+}
