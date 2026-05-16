@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>云游东洋 - 智慧景区预约系统</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="wechat-styles.css">
@@ -12,424 +12,292 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- 手机模拟器框架 -->
-    <div class="phone-simulator">
-        <div class="phone-frame">
-            <div class="phone-notch"></div>
-            <div class="phone-screen">
-                <!-- 状态栏 -->
-                <div class="status-bar">
-                    <span class="status-time" id="status-time">9:41</span>
-                    <div class="status-icons">
-                        <i class="fas fa-signal"></i>
-                        <i class="fas fa-wifi"></i>
-                        <i class="fas fa-battery-full"></i>
+    <!-- 电脑端提示 -->
+    <div class="desktop-block" id="desktop-block">
+        <div class="desktop-content">
+            <div class="desktop-icon">📱</div>
+            <h2>请使用手机访问</h2>
+            <p>本系统仅支持手机端访问</p>
+            <p class="desktop-tip">请使用手机浏览器或微信扫码访问</p>
+            <div class="desktop-qr">
+                <div class="qr-placeholder">
+                    <i class="fas fa-qrcode"></i>
+                    <span>扫码访问</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 手机端内容 -->
+    <div class="mobile-app" id="mobile-app">
+        <!-- 顶部导航栏 -->
+        <div class="nav-bar" id="nav-bar">
+            <button class="nav-back" id="nav-back" style="display:none;" onclick="goBack()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="nav-title" id="nav-title">云游东洋</span>
+            <div class="nav-right"></div>
+        </div>
+
+        <!-- 页面容器 -->
+        <div class="page-container" id="page-container">
+            <!-- ========== 首页 Tab ========== -->
+            <div class="page active" id="page-home">
+                <!-- 加载动画 -->
+                <div class="loading-screen" id="loading-screen">
+                    <div class="wechat-spinner">
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
                     </div>
+                    <p class="loading-text">正在连接东洋统一账户系统...</p>
                 </div>
 
-                <!-- 顶部导航栏 -->
-                <div class="nav-bar" id="nav-bar">
-                    <button class="nav-back" id="nav-back" style="display:none;" onclick="goBack()">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <span class="nav-title" id="nav-title">云游东洋</span>
-                    <div class="nav-right"></div>
-                </div>
-
-                <!-- 页面容器 -->
-                <div class="page-container" id="page-container">
-                    <!-- ========== 首页 Tab ========== -->
-                    <div class="page active" id="page-home">
-                        <!-- 加载动画 -->
-                        <div class="loading-screen" id="loading-screen">
-                            <div class="wechat-loading">
-                                <div class="loading-dots">
-                                    <span></span><span></span><span></span>
-                                </div>
-                                <p>正在连接东洋统一账户系统...</p>
-                            </div>
+                <!-- 首页内容 -->
+                <div class="home-content" id="home-content" style="display:none;">
+                    <div class="home-banner">
+                        <div class="banner-bg">
+                            <div class="banner-pattern"></div>
                         </div>
-
-                        <!-- 首页内容 -->
-                        <div class="home-content" id="home-content" style="display:none;">
-                            <!-- 顶部横幅 -->
-                            <div class="home-banner">
-                                <div class="banner-bg">
-                                    <div class="banner-pattern"></div>
-                                </div>
-                                <div class="banner-content">
-                                    <h1>探索东洋秘境</h1>
-                                    <p>千里江山如画卷，一键预约览胜景</p>
-                                    <button class="btn-primary btn-block" onclick="switchTab('booking')">
-                                        <i class="fas fa-calendar-check"></i> 立即预约
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- 数据统计 -->
-                            <div class="stats-row">
-                                <div class="stat-card">
-                                    <div class="stat-number">99.9%</div>
-                                    <div class="stat-label">系统可靠</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-number">24h</div>
-                                    <div class="stat-label">贴心服务</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-number">1000万+</div>
-                                    <div class="stat-label">游客信赖</div>
-                                </div>
-                            </div>
-
-                            <!-- 功能卡片 -->
-                            <div class="section-header">
-                                <h2>智慧预约特色</h2>
-                            </div>
-                            <div class="feature-grid">
-                                <div class="feature-card" onclick="switchTab('booking')">
-                                    <div class="feature-icon-wrap" style="background:#e8f5e9;">
-                                        <i class="fas fa-bolt" style="color:#07C160;"></i>
-                                    </div>
-                                    <div class="feature-text">
-                                        <h3>闪电预约</h3>
-                                        <p>毫秒级响应</p>
-                                    </div>
-                                </div>
-                                <div class="feature-card" onclick="switchTab('booking')">
-                                    <div class="feature-icon-wrap" style="background:#e3f2fd;">
-                                        <i class="fas fa-shield-alt" style="color:#1976D2;"></i>
-                                    </div>
-                                    <div class="feature-text">
-                                        <h3>安全保障</h3>
-                                        <p>银行级加密</p>
-                                    </div>
-                                </div>
-                                <div class="feature-card" onclick="switchTab('booking')">
-                                    <div class="feature-icon-wrap" style="background:#fff3e0;">
-                                        <i class="fas fa-mobile-alt" style="color:#F57C00;"></i>
-                                    </div>
-                                    <div class="feature-text">
-                                        <h3>多端同步</h3>
-                                        <p>随时随地预约</p>
-                                    </div>
-                                </div>
-                                <div class="feature-card" onclick="switchTab('booking')">
-                                    <div class="feature-icon-wrap" style="background:#fce4ec;">
-                                        <i class="fas fa-headset" style="color:#E91E63;"></i>
-                                    </div>
-                                    <div class="feature-text">
-                                        <h3>贴心服务</h3>
-                                        <p>AI智能客服</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 公告 -->
-                            <div class="section-header">
-                                <h2>系统公告</h2>
-                            </div>
-                            <div class="notice-list">
-                                <div class="notice-item">
-                                    <span class="notice-tag">通知</span>
-                                    <span class="notice-text">系统升级完成，现在更快了（才怪）</span>
-                                    <span class="notice-time">今天</span>
-                                </div>
-                                <div class="notice-item">
-                                    <span class="notice-tag hot">热门</span>
-                                    <span class="notice-text">东洋秘境春季特惠活动进行中</span>
-                                    <span class="notice-time">昨天</span>
-                                </div>
-                                <div class="notice-item">
-                                    <span class="notice-tag">通知</span>
-                                    <span class="notice-text">黄牛团伙已被抓获（假的）</span>
-                                    <span class="notice-time">3天前</span>
-                                </div>
-                            </div>
+                        <div class="banner-content">
+                            <h1>探索东洋秘境</h1>
+                            <p>千里江山如画卷，一键预约览胜景</p>
+                            <button class="btn-primary btn-block" onclick="switchTab('booking')">
+                                <i class="fas fa-calendar-check"></i> 立即预约
+                            </button>
                         </div>
                     </div>
-
-                    <!-- ========== 景点 Tab ========== -->
-                    <div class="page" id="page-scenic">
-                        <div class="scenic-list">
-                            <div class="scenic-card">
-                                <div class="scenic-img" style="background:linear-gradient(135deg,#667eea,#764ba2);">
-                                    <span class="scenic-emoji">🏔️</span>
-                                </div>
-                                <div class="scenic-info">
-                                    <h3>东洋主峰</h3>
-                                    <p class="scenic-desc">海拔3200米，云海日出壮观</p>
-                                    <div class="scenic-meta">
-                                        <span class="scenic-price">¥128/人</span>
-                                        <span class="scenic-status available">可预约</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="scenic-card">
-                                <div class="scenic-img" style="background:linear-gradient(135deg,#f093fb,#f5576c);">
-                                    <span class="scenic-emoji">🌊</span>
-                                </div>
-                                <div class="scenic-info">
-                                    <h3>碧波潭</h3>
-                                    <p class="scenic-desc">清澈见底的高山湖泊</p>
-                                    <div class="scenic-meta">
-                                        <span class="scenic-price">¥88/人</span>
-                                        <span class="scenic-status available">可预约</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="scenic-card">
-                                <div class="scenic-img" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">
-                                    <span class="scenic-emoji">🏯</span>
-                                </div>
-                                <div class="scenic-info">
-                                    <h3>东洋古寺</h3>
-                                    <p class="scenic-desc">千年古刹，香火鼎盛</p>
-                                    <div class="scenic-meta">
-                                        <span class="scenic-price">¥68/人</span>
-                                        <span class="scenic-status sold-out">已售罄</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="scenic-card">
-                                <div class="scenic-img" style="background:linear-gradient(135deg,#43e97b,#38f9d7);">
-                                    <span class="scenic-emoji">🌸</span>
-                                </div>
-                                <div class="scenic-info">
-                                    <h3>樱花谷</h3>
-                                    <p class="scenic-desc">春季限定，漫山遍野</p>
-                                    <div class="scenic-meta">
-                                        <span class="scenic-price">¥98/人</span>
-                                        <span class="scenic-status sold-out">已售罄</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="scenic-card">
-                                <div class="scenic-img" style="background:linear-gradient(135deg,#fa709a,#fee140);">
-                                    <span class="scenic-emoji">🏮</span>
-                                </div>
-                                <div class="scenic-info">
-                                    <h3>东洋古镇</h3>
-                                    <p class="scenic-desc">明清古建筑群落</p>
-                                    <div class="scenic-meta">
-                                        <span class="scenic-price">¥58/人</span>
-                                        <span class="scenic-status available">可预约</span>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-number">99.9%</div>
+                            <div class="stat-label">系统可靠</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">24h</div>
+                            <div class="stat-label">贴心服务</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">1000万+</div>
+                            <div class="stat-label">游客信赖</div>
                         </div>
                     </div>
-
-                    <!-- ========== 预约 Tab ========== -->
-                    <div class="page" id="page-booking">
-                        <!-- 未登录状态 -->
-                        <div class="booking-state" id="booking-not-logged">
-                            <div class="empty-state">
-                                <div class="empty-icon">🔒</div>
-                                <h3>请先登录</h3>
-                                <p>登录后即可预约景区门票</p>
-                                <button class="btn-primary" onclick="showLoginSheet()">立即登录</button>
-                            </div>
+                    <div class="section-header"><h2>智慧预约特色</h2></div>
+                    <div class="feature-grid">
+                        <div class="feature-card" onclick="switchTab('booking')">
+                            <div class="feature-icon-wrap" style="background:#e8f5e9;"><i class="fas fa-bolt" style="color:#07C160;"></i></div>
+                            <div class="feature-text"><h3>闪电预约</h3><p>毫秒级响应</p></div>
                         </div>
-
-                        <!-- 已登录 - 预约入口 -->
-                        <div class="booking-state" id="booking-logged" style="display:none;">
-                            <div class="booking-entry">
-                                <div class="entry-header">
-                                    <h3>景区预约</h3>
-                                    <p>选择日期和时段，开始您的旅程</p>
-                                </div>
-                                <div class="entry-form">
-                                    <div class="form-item" onclick="openDatePicker()">
-                                        <div class="form-item-icon"><i class="fas fa-calendar"></i></div>
-                                        <div class="form-item-content">
-                                            <label>预约日期</label>
-                                            <span id="display-date">请选择日期</span>
-                                        </div>
-                                        <i class="fas fa-chevron-right form-item-arrow"></i>
-                                    </div>
-                                    <div class="form-item">
-                                        <div class="form-item-icon"><i class="fas fa-clock"></i></div>
-                                        <div class="form-item-content">
-                                            <label>预约时段</label>
-                                            <span id="display-time">请选择时段</span>
-                                        </div>
-                                        <i class="fas fa-chevron-right form-item-arrow"></i>
-                                    </div>
-                                </div>
-                                <div class="time-slots" id="time-slots-section" style="display:none;">
-                                    <div class="time-slots-grid">
-                                        <button class="time-slot-btn" data-time="09:00" onclick="selectTime(this)">
-                                            <span class="slot-time">09:00</span>
-                                            <span class="slot-status">余票充足</span>
-                                        </button>
-                                        <button class="time-slot-btn" data-time="11:00" onclick="selectTime(this)">
-                                            <span class="slot-time">11:00</span>
-                                            <span class="slot-status warn">余票紧张</span>
-                                        </button>
-                                        <button class="time-slot-btn" data-time="13:00" onclick="selectTime(this)">
-                                            <span class="slot-time">13:00</span>
-                                            <span class="slot-status">余票充足</span>
-                                        </button>
-                                        <button class="time-slot-btn" data-time="15:00" onclick="selectTime(this)">
-                                            <span class="slot-time">15:00</span>
-                                            <span class="slot-status warn">余票紧张</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="ticket-section" id="ticket-section" style="display:none;">
-                                    <h4>选择票种</h4>
-                                    <div class="ticket-list">
-                                        <div class="ticket-item">
-                                            <div class="ticket-info">
-                                                <span class="ticket-name">成人票</span>
-                                                <span class="ticket-desc">18-59周岁</span>
-                                            </div>
-                                            <span class="ticket-price">¥128</span>
-                                            <div class="ticket-counter">
-                                                <button class="counter-btn" onclick="changeTicket('adult',-1)">-</button>
-                                                <span class="counter-val" id="adult-count">0</span>
-                                                <button class="counter-btn" onclick="changeTicket('adult',1)">+</button>
-                                            </div>
-                                        </div>
-                                        <div class="ticket-item">
-                                            <div class="ticket-info">
-                                                <span class="ticket-name">儿童票</span>
-                                                <span class="ticket-desc">6-17周岁</span>
-                                            </div>
-                                            <span class="ticket-price">¥68</span>
-                                            <div class="ticket-counter">
-                                                <button class="counter-btn" onclick="changeTicket('child',-1)">-</button>
-                                                <span class="counter-val" id="child-count">0</span>
-                                                <button class="counter-btn" onclick="changeTicket('child',1)">+</button>
-                                            </div>
-                                        </div>
-                                        <div class="ticket-item">
-                                            <div class="ticket-info">
-                                                <span class="ticket-name">老年票</span>
-                                                <span class="ticket-desc">60周岁以上</span>
-                                            </div>
-                                            <span class="ticket-price">¥88</span>
-                                            <div class="ticket-counter">
-                                                <button class="counter-btn" onclick="changeTicket('senior',-1)">-</button>
-                                                <span class="counter-val" id="senior-count">0</span>
-                                                <button class="counter-btn" onclick="changeTicket('senior',1)">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ticket-total">
-                                        合计：<span id="total-count">0</span>张，<span id="total-price">¥0</span>
-                                    </div>
-                                </div>
-                                <!-- 身份信息区域（虚拟身份选择） -->
-                                <div class="identity-section" id="identity-section" style="display:none;">
-                                    <h4>选择游客身份</h4>
-                                    <p class="identity-hint"><i class="fas fa-info-circle"></i> 请选择系统分配的虚拟身份，无需输入真实信息</p>
-                                    <div class="identity-cards" id="identity-cards"></div>
-                                </div>
-                                <div class="entry-actions">
-                                    <button class="btn-primary btn-block" id="booking-action-btn" onclick="bookingAction()">
-                                        选择日期和时段
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="feature-card" onclick="switchTab('booking')">
+                            <div class="feature-icon-wrap" style="background:#e3f2fd;"><i class="fas fa-shield-alt" style="color:#1976D2;"></i></div>
+                            <div class="feature-text"><h3>安全保障</h3><p>银行级加密</p></div>
                         </div>
-
-                        <!-- 排队状态 -->
-                        <div class="booking-state" id="booking-queue" style="display:none;">
-                            <div class="queue-view">
-                                <div class="queue-header">
-                                    <div class="queue-animation">
-                                        <div class="queue-dots">
-                                            <span></span><span></span><span></span><span></span><span></span>
-                                        </div>
-                                    </div>
-                                    <h3>系统排队中</h3>
-                                    <p>前方还有 <strong id="queue-count">2847</strong> 人</p>
-                                    <p class="queue-eta">预计等待：<span id="queue-time">约15分钟</span></p>
-                                </div>
-                                <div class="queue-warning">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    请勿刷新页面，否则需要重新排队
-                                </div>
-                                <!-- 社交动态流 -->
-                                <div class="social-feed" id="social-feed">
-                                    <div class="feed-header">实时动态</div>
-                                    <div class="feed-list" id="feed-list"></div>
-                                </div>
-                                <div class="queue-actions">
-                                    <button class="btn-outline" onclick="giveUpQueue()">放弃排队</button>
-                                    <button class="btn-primary" onclick="continueWaiting()">继续等待</button>
-                                </div>
-                            </div>
+                        <div class="feature-card" onclick="switchTab('booking')">
+                            <div class="feature-icon-wrap" style="background:#fff3e0;"><i class="fas fa-mobile-alt" style="color:#F57C00;"></i></div>
+                            <div class="feature-text"><h3>多端同步</h3><p>随时随地预约</p></div>
+                        </div>
+                        <div class="feature-card" onclick="switchTab('booking')">
+                            <div class="feature-icon-wrap" style="background:#fce4ec;"><i class="fas fa-headset" style="color:#E91E63;"></i></div>
+                            <div class="feature-text"><h3>贴心服务</h3><p>AI智能客服</p></div>
                         </div>
                     </div>
-
-                    <!-- ========== 我的 Tab ========== -->
-                    <div class="page" id="page-profile">
-                        <div class="profile-header">
-                            <div class="profile-avatar" id="profile-avatar">👤</div>
-                            <div class="profile-info">
-                                <h3 id="profile-name">未登录</h3>
-                                <p id="profile-phone">点击登录账号</p>
-                            </div>
+                    <div class="section-header"><h2>系统公告</h2></div>
+                    <div class="notice-list">
+                        <div class="notice-item">
+                            <span class="notice-tag">通知</span>
+                            <span class="notice-text">系统升级完成，现在更快了（才怪）</span>
+                            <span class="notice-time">今天</span>
                         </div>
-                        <div class="profile-menu">
-                            <div class="menu-item" onclick="showAchievements()">
-                                <div class="menu-icon" style="background:#fff3e0;"><i class="fas fa-trophy" style="color:#F57C00;"></i></div>
-                                <span>我的成就</span>
-                                <span class="menu-badge" id="achievement-badge">0</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
-                            <div class="menu-item">
-                                <div class="menu-icon" style="background:#e8f5e9;"><i class="fas fa-ticket-alt" style="color:#07C160;"></i></div>
-                                <span>预约记录</span>
-                                <span class="menu-extra">0</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
-                            <div class="menu-item">
-                                <div class="menu-icon" style="background:#e3f2fd;"><i class="fas fa-star" style="color:#1976D2;"></i></div>
-                                <span>我的收藏</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
-                            <div class="menu-item">
-                                <div class="menu-icon" style="background:#fce4ec;"><i class="fas fa-cog" style="color:#E91E63;"></i></div>
-                                <span>系统设置</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
-                            <div class="menu-item">
-                                <div class="menu-icon" style="background:#f3e5f5;"><i class="fas fa-question-circle" style="color:#9C27B0;"></i></div>
-                                <span>帮助与反馈</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
+                        <div class="notice-item">
+                            <span class="notice-tag hot">热门</span>
+                            <span class="notice-text">东洋秘境春季特惠活动进行中</span>
+                            <span class="notice-time">昨天</span>
                         </div>
-                        <div class="profile-footer">
-                            <p>云游东洋 v2.0.24</p>
-                            <p class="footer-joke">系统可靠率：99.9%（自测）</p>
+                        <div class="notice-item">
+                            <span class="notice-tag">通知</span>
+                            <span class="notice-text">黄牛团伙已被抓获（假的）</span>
+                            <span class="notice-time">3天前</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 底部TabBar -->
-                <div class="tab-bar" id="tab-bar">
-                    <div class="tab-item active" onclick="switchTab('home')" data-tab="home">
-                        <i class="fas fa-home"></i>
-                        <span>首页</span>
-                    </div>
-                    <div class="tab-item" onclick="switchTab('scenic')" data-tab="scenic">
-                        <i class="fas fa-mountain"></i>
-                        <span>景点</span>
-                    </div>
-                    <div class="tab-item" onclick="switchTab('booking')" data-tab="booking">
-                        <i class="fas fa-calendar-check"></i>
-                        <span>预约</span>
-                    </div>
-                    <div class="tab-item" onclick="switchTab('profile')" data-tab="profile">
-                        <i class="fas fa-user"></i>
-                        <span>我的</span>
                     </div>
                 </div>
             </div>
+
+            <!-- ========== 景点 Tab ========== -->
+            <div class="page" id="page-scenic">
+                <div class="scenic-list">
+                    <div class="scenic-card">
+                        <div class="scenic-img" style="background:linear-gradient(135deg,#667eea,#764ba2);"><span class="scenic-emoji">🏔️</span></div>
+                        <div class="scenic-info">
+                            <h3>东洋主峰</h3><p class="scenic-desc">海拔3200米，云海日出壮观</p>
+                            <div class="scenic-meta"><span class="scenic-price">¥128/人</span><span class="scenic-status available">可预约</span></div>
+                        </div>
+                    </div>
+                    <div class="scenic-card">
+                        <div class="scenic-img" style="background:linear-gradient(135deg,#f093fb,#f5576c);"><span class="scenic-emoji">🌊</span></div>
+                        <div class="scenic-info">
+                            <h3>碧波潭</h3><p class="scenic-desc">清澈见底的高山湖泊</p>
+                            <div class="scenic-meta"><span class="scenic-price">¥88/人</span><span class="scenic-status available">可预约</span></div>
+                        </div>
+                    </div>
+                    <div class="scenic-card">
+                        <div class="scenic-img" style="background:linear-gradient(135deg,#4facfe,#00f2fe);"><span class="scenic-emoji">🏯</span></div>
+                        <div class="scenic-info">
+                            <h3>东洋古寺</h3><p class="scenic-desc">千年古刹，香火鼎盛</p>
+                            <div class="scenic-meta"><span class="scenic-price">¥68/人</span><span class="scenic-status sold-out">已售罄</span></div>
+                        </div>
+                    </div>
+                    <div class="scenic-card">
+                        <div class="scenic-img" style="background:linear-gradient(135deg,#43e97b,#38f9d7);"><span class="scenic-emoji">🌸</span></div>
+                        <div class="scenic-info">
+                            <h3>樱花谷</h3><p class="scenic-desc">春季限定，漫山遍野</p>
+                            <div class="scenic-meta"><span class="scenic-price">¥98/人</span><span class="scenic-status sold-out">已售罄</span></div>
+                        </div>
+                    </div>
+                    <div class="scenic-card">
+                        <div class="scenic-img" style="background:linear-gradient(135deg,#fa709a,#fee140);"><span class="scenic-emoji">🏮</span></div>
+                        <div class="scenic-info">
+                            <h3>东洋古镇</h3><p class="scenic-desc">明清古建筑群落</p>
+                            <div class="scenic-meta"><span class="scenic-price">¥58/人</span><span class="scenic-status available">可预约</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== 预约 Tab ========== -->
+            <div class="page" id="page-booking">
+                <div class="booking-state" id="booking-not-logged">
+                    <div class="empty-state">
+                        <div class="empty-icon">🔒</div>
+                        <h3>请先登录</h3>
+                        <p>登录后即可预约景区门票</p>
+                        <button class="btn-primary" onclick="showLoginSheet()">立即登录</button>
+                    </div>
+                </div>
+                <div class="booking-state" id="booking-logged" style="display:none;">
+                    <div class="booking-entry">
+                        <div class="entry-header"><h3>景区预约</h3><p>选择日期和时段，开始您的旅程</p></div>
+                        <div class="entry-form">
+                            <div class="form-item" onclick="openDatePicker()">
+                                <div class="form-item-icon"><i class="fas fa-calendar"></i></div>
+                                <div class="form-item-content"><label>预约日期</label><span id="display-date">请选择日期</span></div>
+                                <i class="fas fa-chevron-right form-item-arrow"></i>
+                            </div>
+                            <div class="form-item">
+                                <div class="form-item-icon"><i class="fas fa-clock"></i></div>
+                                <div class="form-item-content"><label>预约时段</label><span id="display-time">请选择时段</span></div>
+                                <i class="fas fa-chevron-right form-item-arrow"></i>
+                            </div>
+                        </div>
+                        <div class="time-slots" id="time-slots-section" style="display:none;">
+                            <div class="time-slots-grid">
+                                <button class="time-slot-btn" data-time="09:00" onclick="selectTime(this)"><span class="slot-time">09:00</span><span class="slot-status">余票充足</span></button>
+                                <button class="time-slot-btn" data-time="11:00" onclick="selectTime(this)"><span class="slot-time">11:00</span><span class="slot-status warn">余票紧张</span></button>
+                                <button class="time-slot-btn" data-time="13:00" onclick="selectTime(this)"><span class="slot-time">13:00</span><span class="slot-status">余票充足</span></button>
+                                <button class="time-slot-btn" data-time="15:00" onclick="selectTime(this)"><span class="slot-time">15:00</span><span class="slot-status warn">余票紧张</span></button>
+                            </div>
+                        </div>
+                        <div class="ticket-section" id="ticket-section" style="display:none;">
+                            <h4>选择票种</h4>
+                            <div class="ticket-list">
+                                <div class="ticket-item">
+                                    <div class="ticket-info"><span class="ticket-name">成人票</span><span class="ticket-desc">18-59周岁</span></div>
+                                    <span class="ticket-price">¥128</span>
+                                    <div class="ticket-counter"><button class="counter-btn" onclick="changeTicket('adult',-1)">-</button><span class="counter-val" id="adult-count">0</span><button class="counter-btn" onclick="changeTicket('adult',1)">+</button></div>
+                                </div>
+                                <div class="ticket-item">
+                                    <div class="ticket-info"><span class="ticket-name">儿童票</span><span class="ticket-desc">6-17周岁</span></div>
+                                    <span class="ticket-price">¥68</span>
+                                    <div class="ticket-counter"><button class="counter-btn" onclick="changeTicket('child',-1)">-</button><span class="counter-val" id="child-count">0</span><button class="counter-btn" onclick="changeTicket('child',1)">+</button></div>
+                                </div>
+                                <div class="ticket-item">
+                                    <div class="ticket-info"><span class="ticket-name">老年票</span><span class="ticket-desc">60周岁以上</span></div>
+                                    <span class="ticket-price">¥88</span>
+                                    <div class="ticket-counter"><button class="counter-btn" onclick="changeTicket('senior',-1)">-</button><span class="counter-val" id="senior-count">0</span><button class="counter-btn" onclick="changeTicket('senior',1)">+</button></div>
+                                </div>
+                            </div>
+                            <div class="ticket-total">合计：<span id="total-count">0</span>张，<span id="total-price">¥0</span></div>
+                        </div>
+                        <!-- 身份信息区域 -->
+                        <div class="identity-section" id="identity-section" style="display:none;">
+                            <h4>选择游客身份</h4>
+                            <p class="identity-hint"><i class="fas fa-info-circle"></i> 请选择系统分配的虚拟身份，无需输入真实信息</p>
+                            <div class="identity-cards" id="identity-cards"></div>
+                        </div>
+                        <div class="entry-actions">
+                            <button class="btn-primary btn-block" id="booking-action-btn" onclick="bookingAction()">选择日期和时段</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-state" id="booking-queue" style="display:none;">
+                    <div class="queue-view">
+                        <div class="queue-header">
+                            <div class="queue-animation">
+                                <div class="queue-dots"><span></span><span></span><span></span><span></span><span></span></div>
+                            </div>
+                            <h3>系统排队中</h3>
+                            <p>前方还有 <strong id="queue-count">2847</strong> 人</p>
+                            <p class="queue-eta">预计等待：<span id="queue-time">约15分钟</span></p>
+                        </div>
+                        <div class="queue-warning"><i class="fas fa-exclamation-triangle"></i> 请勿刷新页面，否则需要重新排队</div>
+                        <div class="social-feed" id="social-feed">
+                            <div class="feed-header">实时动态</div>
+                            <div class="feed-list" id="feed-list"></div>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="btn-outline" onclick="giveUpQueue()">放弃排队</button>
+                            <button class="btn-primary" onclick="continueWaiting()">继续等待</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== 我的 Tab ========== -->
+            <div class="page" id="page-profile">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profile-avatar">👤</div>
+                    <div class="profile-info"><h3 id="profile-name">未登录</h3><p id="profile-phone">点击登录账号</p></div>
+                </div>
+                <div class="profile-menu">
+                    <div class="menu-item" onclick="showAchievements()">
+                        <div class="menu-icon" style="background:#fff3e0;"><i class="fas fa-trophy" style="color:#F57C00;"></i></div>
+                        <span>我的成就</span>
+                        <span class="menu-badge" id="achievement-badge">0</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-icon" style="background:#e8f5e9;"><i class="fas fa-ticket-alt" style="color:#07C160;"></i></div>
+                        <span>预约记录</span><span class="menu-extra">0</span><i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-icon" style="background:#e3f2fd;"><i class="fas fa-star" style="color:#1976D2;"></i></div>
+                        <span>我的收藏</span><i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-icon" style="background:#fce4ec;"><i class="fas fa-cog" style="color:#E91E63;"></i></div>
+                        <span>系统设置</span><i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-icon" style="background:#f3e5f5;"><i class="fas fa-question-circle" style="color:#9C27B0;"></i></div>
+                        <span>帮助与反馈</span><i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                <div class="profile-footer">
+                    <p>云游东洋 v2.0.24</p>
+                    <p class="footer-joke">系统可靠率：99.9%（自测）</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部TabBar -->
+        <div class="tab-bar" id="tab-bar">
+            <div class="tab-item active" onclick="switchTab('home')" data-tab="home"><i class="fas fa-home"></i><span>首页</span></div>
+            <div class="tab-item" onclick="switchTab('scenic')" data-tab="scenic"><i class="fas fa-mountain"></i><span>景点</span></div>
+            <div class="tab-item" onclick="switchTab('booking')" data-tab="booking"><i class="fas fa-calendar-check"></i><span>预约</span></div>
+            <div class="tab-item" onclick="switchTab('profile')" data-tab="profile"><i class="fas fa-user"></i><span>我的</span></div>
         </div>
     </div>
 
@@ -437,14 +305,17 @@
     <div class="action-sheet" id="login-sheet">
         <div class="action-sheet-mask" onclick="closeLoginSheet()"></div>
         <div class="action-sheet-content">
-            <div class="sheet-header">
-                <h3>东洋统一账户登录</h3>
-                <button class="sheet-close" onclick="closeLoginSheet()">&times;</button>
-            </div>
+            <div class="sheet-header"><h3>东洋统一账户登录</h3><button class="sheet-close" onclick="closeLoginSheet()">&times;</button></div>
             <div class="sheet-body">
                 <div class="form-group">
                     <label>手机号码</label>
-                    <input type="text" id="login-phone" placeholder="请输入11位手机号码" maxlength="11">
+                    <div class="virtual-phone-select" id="virtual-phone-select">
+                        <div class="virtual-phone-selected" onclick="togglePhoneDropdown()">
+                            <span id="selected-phone-display">请选择虚拟手机号</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="virtual-phone-dropdown" id="phone-dropdown"></div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>验证码</label>
@@ -453,9 +324,7 @@
                         <button class="btn-link" id="send-code-btn" onclick="sendVerificationCode()">发送验证码</button>
                     </div>
                 </div>
-                <div class="captcha-area" id="captcha-area" style="display:none;">
-                    <!-- 验证码游戏容器 -->
-                </div>
+                <div class="captcha-area" id="captcha-area" style="display:none;"></div>
                 <div class="form-check">
                     <input type="checkbox" id="agree-terms">
                     <label for="agree-terms">我已阅读并同意《服务协议》和《隐私政策》</label>
@@ -474,9 +343,7 @@
                 <h3>选择日期</h3>
                 <button class="sheet-btn primary" onclick="confirmDate()">确定</button>
             </div>
-            <div class="sheet-body">
-                <div class="date-grid" id="date-grid"></div>
-            </div>
+            <div class="sheet-body"><div class="date-grid" id="date-grid"></div></div>
         </div>
     </div>
 
@@ -484,10 +351,7 @@
     <div class="action-sheet" id="agreement-sheet">
         <div class="action-sheet-mask" onclick="closeAgreementSheet()"></div>
         <div class="action-sheet-sheet">
-            <div class="sheet-header">
-                <h3>用户服务协议</h3>
-                <button class="sheet-close" onclick="closeAgreementSheet()">&times;</button>
-            </div>
+            <div class="sheet-header"><h3>用户服务协议</h3><button class="sheet-close" onclick="closeAgreementSheet()">&times;</button></div>
             <div class="agreement-body" id="agreement-scroll">
                 <h4>一、服务条款</h4>
                 <p>1.1 本协议是您与云游东洋景区预约系统之间关于使用本服务的法律协议。</p>
@@ -521,19 +385,10 @@
     <div class="action-sheet" id="lottery-sheet">
         <div class="action-sheet-mask" onclick="closeLotterySheet()"></div>
         <div class="action-sheet-content">
-            <div class="sheet-header">
-                <h3>抽签预约</h3>
-                <button class="sheet-close" onclick="closeLotterySheet()">&times;</button>
-            </div>
+            <div class="sheet-header"><h3>抽签预约</h3><button class="sheet-close" onclick="closeLotterySheet()">&times;</button></div>
             <div class="sheet-body">
-                <div class="lottery-notice">
-                    <p>由于预约火爆，系统启动公平抽签模式</p>
-                    <p>每人每日仅有一次抽签机会</p>
-                </div>
-                <div class="lottery-status" id="lottery-status">
-                    <div class="lottery-ball-icon">🎱</div>
-                    <p>点击下方按钮开始抽签</p>
-                </div>
+                <div class="lottery-notice"><p>由于预约火爆，系统启动公平抽签模式</p><p>每人每日仅有一次抽签机会</p></div>
+                <div class="lottery-status" id="lottery-status"><div class="lottery-ball-icon">🎱</div><p>点击下方按钮开始抽签</p></div>
                 <button class="btn-primary btn-block" id="start-lottery-btn" onclick="startLottery()">开始抽签</button>
             </div>
         </div>
@@ -543,39 +398,15 @@
     <div class="action-sheet" id="payment-sheet">
         <div class="action-sheet-mask" onclick="closePaymentSheet()"></div>
         <div class="action-sheet-content">
-            <div class="sheet-header">
-                <h3>确认支付</h3>
-                <button class="sheet-close" onclick="closePaymentSheet()">&times;</button>
-            </div>
+            <div class="sheet-header"><h3>确认支付</h3><button class="sheet-close" onclick="closePaymentSheet()">&times;</button></div>
             <div class="sheet-body">
-                <div class="payment-amount">
-                    <span class="amount-label">支付金额</span>
-                    <span class="amount-value" id="payment-amount">¥0</span>
-                </div>
-                <div class="payment-countdown">
-                    请在 <span id="pay-countdown">15:00</span> 内完成支付
-                </div>
+                <div class="payment-amount"><span class="amount-label">支付金额</span><span class="amount-value" id="payment-amount">¥0</span></div>
+                <div class="payment-countdown">请在 <span id="pay-countdown">15:00</span> 内完成支付</div>
                 <div class="payment-methods">
-                    <div class="payment-method" onclick="selectPayment(this, 'wechat')">
-                        <div class="method-icon wechat"><i class="fab fa-weixin"></i></div>
-                        <span>微信支付</span>
-                        <i class="fas fa-check-circle check-icon"></i>
-                    </div>
-                    <div class="payment-method" onclick="selectPayment(this, 'alipay')">
-                        <div class="method-icon alipay"><i class="fab fa-alipay"></i></div>
-                        <span>支付宝</span>
-                        <i class="fas fa-check-circle check-icon"></i>
-                    </div>
-                    <div class="payment-method" onclick="selectPayment(this, 'bank')">
-                        <div class="method-icon bank"><i class="fas fa-university"></i></div>
-                        <span>银行卡</span>
-                        <i class="fas fa-check-circle check-icon"></i>
-                    </div>
-                    <div class="payment-method" onclick="selectPayment(this, 'dongyang')">
-                        <div class="method-icon dongyang">🪙</div>
-                        <span>东洋币</span>
-                        <i class="fas fa-check-circle check-icon"></i>
-                    </div>
+                    <div class="payment-method selected" onclick="selectPayment(this, 'wechat')"><div class="method-icon wechat"><i class="fab fa-weixin"></i></div><span>微信支付</span><i class="fas fa-check-circle check-icon"></i></div>
+                    <div class="payment-method" onclick="selectPayment(this, 'alipay')"><div class="method-icon alipay"><i class="fab fa-alipay"></i></div><span>支付宝</span><i class="fas fa-check-circle check-icon"></i></div>
+                    <div class="payment-method" onclick="selectPayment(this, 'bank')"><div class="method-icon bank"><i class="fas fa-university"></i></div><span>银行卡</span><i class="fas fa-check-circle check-icon"></i></div>
+                    <div class="payment-method" onclick="selectPayment(this, 'dongyang')"><div class="method-icon dongyang">🪙</div><span>东洋币</span><i class="fas fa-check-circle check-icon"></i></div>
                 </div>
                 <button class="btn-primary btn-block" onclick="confirmPayment()">确认支付</button>
             </div>
@@ -586,30 +417,22 @@
     <div class="action-sheet" id="achievement-sheet">
         <div class="action-sheet-mask" onclick="closeAchievementSheet()"></div>
         <div class="action-sheet-sheet">
-            <div class="sheet-header">
-                <h3>我的成就</h3>
-                <button class="sheet-close" onclick="closeAchievementSheet()">&times;</button>
-            </div>
+            <div class="sheet-header"><h3>我的成就</h3><button class="sheet-close" onclick="closeAchievementSheet()">&times;</button></div>
             <div class="achievement-grid" id="achievement-grid"></div>
         </div>
     </div>
 
-    <!-- ========== 成就解锁通知 ========== -->
+    <!-- 成就解锁通知 -->
     <div class="achievement-toast" id="achievement-toast">
         <div class="achievement-toast-icon">🏆</div>
-        <div class="achievement-toast-text">
-            <strong>成就解锁</strong>
-            <span id="achievement-toast-name"></span>
-        </div>
+        <div class="achievement-toast-text"><strong>成就解锁</strong><span id="achievement-toast-name"></span></div>
     </div>
 
-    <!-- ========== 通关页面 ========== -->
+    <!-- 通关页面 -->
     <div class="action-sheet" id="success-sheet">
         <div class="action-sheet-mask"></div>
         <div class="action-sheet-sheet">
-            <div class="sheet-header">
-                <h3>预约成功</h3>
-            </div>
+            <div class="sheet-header"><h3>预约成功</h3></div>
             <div class="success-body">
                 <div class="success-icon">🎉</div>
                 <h3>恭喜您！预约成功！</h3>
@@ -618,7 +441,7 @@
                     <h4><i class="fas fa-eye"></i> 现实揭露</h4>
                     <div class="reveal-stats" id="reveal-stats"></div>
                     <div class="reality-text">
-                        <p><strong>技术真相：</strong>明明有充足资源，却故意设置各种障碍，制造"系统繁忙"假象。</p>
+                        <p><strong>技术真相：</strong>明明有充足资源，却故意设置各种障碍。</p>
                         <p><strong>用户体验：</strong>普通游客经历无数次验证码，黄牛却轻松绕过。</p>
                         <p><strong>设计目的：</strong>制造稀缺感，迫使用户转向高价"VIP通道"。</p>
                     </div>
@@ -629,23 +452,15 @@
         </div>
     </div>
 
-    <!-- ========== Toast提示 ========== -->
+    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <!-- ========== AI客服 ========== -->
-    <div class="ai-float-btn" id="ai-float-btn" onclick="toggleAIService()">
-        <span>🤖</span>
-    </div>
+    <!-- AI客服 -->
+    <div class="ai-float-btn" id="ai-float-btn" onclick="toggleAIService()"><span>🤖</span></div>
     <div class="ai-chat-panel" id="ai-chat-panel">
-        <div class="ai-chat-header">
-            <span>东洋智能客服</span>
-            <button onclick="closeAIService()">&times;</button>
-        </div>
+        <div class="ai-chat-header"><span>东洋智能客服</span><button onclick="closeAIService()">&times;</button></div>
         <div class="ai-chat-messages" id="chat-messages">
-            <div class="ai-msg bot">
-                <div class="ai-avatar">🤖</div>
-                <div class="ai-bubble">您好！我是东洋智能客服小助手，请问有什么可以帮助您的？</div>
-            </div>
+            <div class="ai-msg bot"><div class="ai-avatar">🤖</div><div class="ai-bubble">您好！我是东洋智能客服小助手，请问有什么可以帮助您的？</div></div>
         </div>
         <div class="ai-chat-quick">
             <button onclick="askQuickQuestion('预约失败')">预约失败</button>

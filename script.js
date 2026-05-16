@@ -19,6 +19,20 @@ let bookingState = 'entry'; // entry, date, time, ticket, identity, queue
 // 票价配置
 const ticketPrices = { adult: 128, child: 68, senior: 88 };
 
+// 虚拟手机号列表
+const virtualPhones = [
+    '138****6789', '139****1234', '136****5678', '137****8901',
+    '158****3456', '159****7890', '186****2345', '188****6789',
+    '135****0123', '150****4567', '151****8901', '152****2345',
+    '153****6789', '155****0123', '156****4567', '157****8901',
+    '180****2345', '181****6789', '182****0123', '183****4567',
+    '185****8901', '187****2345', '189****6789', '170****0123',
+    '171****4567', '176****8901', '177****2345', '198****6789',
+    '199****0123', '175****4567'
+];
+let selectedVirtualPhone = '';
+let phoneDropdownOpen = false;
+
 // ========================================
 // 页面路由
 // ========================================
@@ -77,9 +91,8 @@ function goBack() {
 // 初始化
 // ========================================
 document.addEventListener('DOMContentLoaded', function() {
-    // 更新状态栏时间
-    updateStatusTime();
-    setInterval(updateStatusTime, 60000);
+    // 初始化虚拟手机号选择器
+    initVirtualPhoneDropdown();
 
     // 加载动画
     setTimeout(() => {
@@ -88,12 +101,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2500);
 });
 
-function updateStatusTime() {
-    const now = new Date();
-    const h = now.getHours().toString().padStart(2, '0');
-    const m = now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('status-time').textContent = `${h}:${m}`;
+function initVirtualPhoneDropdown() {
+    const dropdown = document.getElementById('phone-dropdown');
+    if (!dropdown) return;
+
+    dropdown.innerHTML = virtualPhones.map(phone => `
+        <div class="phone-option" onclick="selectVirtualPhone('${phone}')">${phone}</div>
+    `).join('');
 }
+
+function togglePhoneDropdown() {
+    const dropdown = document.getElementById('phone-dropdown');
+    if (!dropdown) return;
+    phoneDropdownOpen = !phoneDropdownOpen;
+    dropdown.classList.toggle('open', phoneDropdownOpen);
+}
+
+function selectVirtualPhone(phone) {
+    selectedVirtualPhone = phone;
+    document.getElementById('selected-phone-display').textContent = phone;
+    document.getElementById('phone-dropdown').classList.remove('open');
+    phoneDropdownOpen = false;
+}
+
+// 点击外部关闭下拉
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.virtual-phone-select')) {
+        const dropdown = document.getElementById('phone-dropdown');
+        if (dropdown) dropdown.classList.remove('open');
+        phoneDropdownOpen = false;
+    }
+});
 
 // ========================================
 // Toast 提示
@@ -124,10 +162,8 @@ function closeLoginSheet() {
 
 // 发送验证码
 function sendVerificationCode() {
-    const phone = document.getElementById('login-phone').value;
-
-    if (!phone || phone.length !== 11) {
-        showMessage('请输入正确的手机号码', 'error');
+    if (!selectedVirtualPhone) {
+        showMessage('请先选择虚拟手机号', 'error');
         return;
     }
 
@@ -195,14 +231,13 @@ function showCodeNotification(code) {
 
 // 执行登录
 function performLogin() {
-    const phone = document.getElementById('login-phone').value;
-    const code = document.getElementById('verification-code').value;
-    const agreed = document.getElementById('agree-terms').checked;
-
-    if (!phone || phone.length !== 11) {
-        showMessage('请输入正确的手机号码', 'error');
+    if (!selectedVirtualPhone) {
+        showMessage('请先选择虚拟手机号', 'error');
         return;
     }
+
+    const code = document.getElementById('verification-code').value;
+    const agreed = document.getElementById('agree-terms').checked;
 
     if (!code) {
         showMessage('请输入验证码', 'error');
@@ -223,11 +258,11 @@ function performLogin() {
 
     // 登录成功
     isLoggedIn = true;
-    currentUser = { phone };
+    currentUser = { phone: selectedVirtualPhone };
 
     // 更新UI
     document.getElementById('profile-name').textContent = '东洋游客';
-    document.getElementById('profile-phone').textContent = phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+    document.getElementById('profile-phone').textContent = selectedVirtualPhone;
     document.getElementById('profile-avatar').textContent = '😊';
 
     closeLoginSheet();
@@ -290,7 +325,7 @@ function updateBookingPage() {
         actionBtn.disabled = true;
     } else if (!selectedIdentity) {
         actionBtn.textContent = '请选择游客身份';
-        actionBtn.disabled = true;
+        actionBtn.disabled = false;
     } else {
         actionBtn.textContent = '提交预约';
         actionBtn.disabled = false;

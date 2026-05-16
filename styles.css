@@ -2,7 +2,6 @@
    云游东洋 - 微信小程序风格设计系统
    ======================================== */
 
-/* CSS变量 */
 :root {
     --wechat-green: #07C160;
     --wechat-green-dark: #06AD56;
@@ -13,96 +12,107 @@
     --wechat-border: #E5E5E5;
     --wechat-danger: #FA5151;
     --wechat-warning: #FFC300;
-    --wechat-link: #576B95;
-    --phone-width: 375px;
-    --phone-height: 720px;
     --tabbar-height: 56px;
     --navbar-height: 44px;
-    --statusbar-height: 28px;
 }
 
-/* 重置 */
-*, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { height: 100%; }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    background: #1a1a2e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
+    background: var(--wechat-bg);
     color: var(--wechat-text);
     font-size: 14px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    height: 100%;
+    overflow: hidden;
 }
 
 /* ========================================
-   手机模拟器
+   电脑端拦截提示
    ======================================== */
-.phone-simulator {
-    display: flex;
-    justify-content: center;
+.desktop-block {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    z-index: 9999;
     align-items: center;
-    width: 100%;
-    height: 100vh;
+    justify-content: center;
 }
 
-.phone-frame {
-    width: var(--phone-width);
-    height: var(--phone-height);
-    background: #000;
-    border-radius: 40px;
-    padding: 8px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 0 2px #333;
-    position: relative;
+.desktop-content {
+    text-align: center;
+    padding: 40px;
 }
 
-.phone-notch {
-    width: 120px;
-    height: 24px;
-    background: #000;
-    border-radius: 0 0 16px 16px;
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
+.desktop-icon {
+    font-size: 72px;
+    margin-bottom: 24px;
 }
 
-.phone-screen {
-    width: 100%;
-    height: 100%;
-    background: var(--wechat-bg);
-    border-radius: 32px;
-    overflow: hidden;
+.desktop-content h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--wechat-text);
+}
+
+.desktop-content p {
+    font-size: 14px;
+    color: var(--wechat-text-secondary);
+    margin-bottom: 4px;
+}
+
+.desktop-tip {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.desktop-qr {
+    margin-top: 24px;
+}
+
+.qr-placeholder {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    background: var(--wechat-white);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.qr-placeholder i {
+    font-size: 80px;
+    color: var(--wechat-text);
+}
+
+.qr-placeholder span {
+    font-size: 13px;
+    color: var(--wechat-text-secondary);
+}
+
+/* 电脑端显示拦截，手机端隐藏 */
+@media (min-width: 769px) {
+    .desktop-block { display: flex; }
+    .mobile-app { display: none !important; }
+}
+
+/* ========================================
+   手机端App
+   ======================================== */
+.mobile-app {
     display: flex;
     flex-direction: column;
-    position: relative;
-}
-
-/* 状态栏 */
-.status-bar {
-    height: var(--statusbar-height);
-    background: var(--wechat-white);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    font-size: 12px;
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
-.status-icons {
-    display: flex;
-    gap: 6px;
-    font-size: 11px;
+    height: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    background: var(--wechat-bg);
 }
 
 /* 导航栏 */
@@ -129,38 +139,22 @@ body {
     padding: 4px 8px;
 }
 
-.nav-title {
-    font-size: 17px;
-    font-weight: 600;
-}
-
-.nav-right {
-    position: absolute;
-    right: 12px;
-}
+.nav-title { font-size: 17px; font-weight: 600; }
+.nav-right { position: absolute; right: 12px; }
 
 /* 页面容器 */
-.page-container {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-}
+.page-container { flex: 1; overflow: hidden; position: relative; }
 
 .page {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     overflow-y: auto;
     overflow-x: hidden;
     display: none;
     -webkit-overflow-scrolling: touch;
 }
 
-.page.active {
-    display: block;
-}
+.page.active { display: block; }
 
 /* TabBar */
 .tab-bar {
@@ -169,6 +163,7 @@ body {
     border-top: 0.5px solid var(--wechat-border);
     display: flex;
     flex-shrink: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .tab-item {
@@ -184,54 +179,58 @@ body {
     transition: color 0.2s;
 }
 
-.tab-item i {
-    font-size: 20px;
-}
-
-.tab-item.active {
-    color: var(--wechat-green);
-}
+.tab-item i { font-size: 20px; }
+.tab-item.active { color: var(--wechat-green); }
 
 /* ========================================
-   加载动画
+   微信小程序风格加载动画（转圈圈）
    ======================================== */
 .loading-screen {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100%;
+    gap: 20px;
 }
 
-.wechat-loading {
-    text-align: center;
+.wechat-spinner {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    animation: spinnerRotate 1.2s linear infinite;
 }
 
-.loading-dots {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    margin-bottom: 16px;
-}
-
-.loading-dots span {
+.spinner-dot {
+    position: absolute;
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--wechat-green);
-    animation: dotPulse 1.4s ease-in-out infinite;
+    background: #999;
+    top: 50%;
+    left: 50%;
+    margin: -4px 0 0 -4px;
 }
 
-.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+.spinner-dot:nth-child(1) { transform: rotate(0deg) translate(16px); animation: spinnerFade 1.2s linear infinite; animation-delay: -1.1s; }
+.spinner-dot:nth-child(2) { transform: rotate(45deg) translate(16px); animation: spinnerFade 1.2s linear infinite; animation-delay: -1.0s; }
+.spinner-dot:nth-child(3) { transform: rotate(90deg) translate(16px); animation: spinnerFade 1.2s linear infinite; animation-delay: -0.9s; }
+.spinner-dot:nth-child(4) { transform: rotate(135deg) translate(16px); animation: spinnerFade 1.2s linear infinite; animation-delay: -0.8s; }
+.spinner-dot:nth-child(5) { transform: rotate(180deg) translate(16px); animation: spinnerFade 1.2s linear infinite; animation-delay: -0.7s; }
+.spinner-dot:nth-child(6) { transform: rotate(225deg) translate(16px); animation: spinnerFade 1.2s linear infinite; animation-delay: -0.6s; }
+.spinner-dot:nth-child(7) { transform: rotate(270deg) translate(16px); animation: spinnerFade 1.2s linear infinite; animation-delay: -0.5s; }
+.spinner-dot:nth-child(8) { transform: rotate(315deg) translate(16px); animation: spinnerFade 1.2s linear infinite; animation-delay: -0.4s; }
 
-@keyframes dotPulse {
-    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-    40% { transform: scale(1); opacity: 1; }
+@keyframes spinnerRotate { to { transform: rotate(360deg); } }
+
+@keyframes spinnerFade {
+    0% { opacity: 1; background: #333; }
+    100% { opacity: 0.15; background: #999; }
 }
 
-.wechat-loading p {
+.loading-text {
+    font-size: 14px;
     color: var(--wechat-text-secondary);
-    font-size: 13px;
 }
 
 /* ========================================
@@ -247,23 +246,11 @@ body {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
-    width: auto;
 }
 
-.btn-primary:active {
-    background: var(--wechat-green-dark);
-    transform: scale(0.98);
-}
-
-.btn-primary:disabled {
-    background: #C0C0C0;
-    cursor: not-allowed;
-}
-
-.btn-block {
-    display: block;
-    width: 100%;
-}
+.btn-primary:active { background: var(--wechat-green-dark); transform: scale(0.98); }
+.btn-primary:disabled { background: #C0C0C0; cursor: not-allowed; }
+.btn-block { display: block; width: 100%; }
 
 .btn-outline {
     background: var(--wechat-white);
@@ -273,12 +260,9 @@ body {
     padding: 12px 24px;
     font-size: 16px;
     cursor: pointer;
-    transition: all 0.2s;
 }
 
-.btn-outline:active {
-    background: #f0f0f0;
-}
+.btn-outline:active { background: #f0f0f0; }
 
 .btn-link {
     background: none;
@@ -290,19 +274,12 @@ body {
     padding: 0 8px;
 }
 
-.btn-link:disabled {
-    color: var(--wechat-text-secondary);
-    cursor: not-allowed;
-}
+.btn-link:disabled { color: var(--wechat-text-secondary); cursor: not-allowed; }
 
 /* ========================================
    首页
    ======================================== */
-.home-banner {
-    position: relative;
-    height: 200px;
-    overflow: hidden;
-}
+.home-banner { position: relative; height: 200px; overflow: hidden; }
 
 .banner-bg {
     position: absolute;
@@ -323,29 +300,12 @@ body {
     color: #fff;
 }
 
-.banner-content h1 {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.banner-content p {
-    font-size: 14px;
-    opacity: 0.9;
-    margin-bottom: 20px;
-}
-
-.banner-content .btn-primary {
-    background: #fff;
-    color: var(--wechat-green);
-}
+.banner-content h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.banner-content p { font-size: 14px; opacity: 0.9; margin-bottom: 20px; }
+.banner-content .btn-primary { background: #fff; color: var(--wechat-green); }
 
 /* 数据统计 */
-.stats-row {
-    display: flex;
-    padding: 16px;
-    gap: 12px;
-}
+.stats-row { display: flex; padding: 16px; gap: 12px; }
 
 .stat-card {
     flex: 1;
@@ -356,35 +316,15 @@ body {
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-.stat-number {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--wechat-green);
-    margin-bottom: 4px;
-}
-
-.stat-label {
-    font-size: 11px;
-    color: var(--wechat-text-secondary);
-}
+.stat-number { font-size: 18px; font-weight: 700; color: var(--wechat-green); margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: var(--wechat-text-secondary); }
 
 /* 区块标题 */
-.section-header {
-    padding: 16px 16px 8px;
-}
-
-.section-header h2 {
-    font-size: 17px;
-    font-weight: 600;
-}
+.section-header { padding: 16px 16px 8px; }
+.section-header h2 { font-size: 17px; font-weight: 600; }
 
 /* 功能网格 */
-.feature-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 0 16px 16px;
-}
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px 16px; }
 
 .feature-card {
     background: var(--wechat-white);
@@ -394,13 +334,10 @@ body {
     align-items: center;
     gap: 12px;
     cursor: pointer;
-    transition: transform 0.2s;
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-.feature-card:active {
-    transform: scale(0.97);
-}
+.feature-card:active { transform: scale(0.97); }
 
 .feature-icon-wrap {
     width: 40px;
@@ -413,21 +350,11 @@ body {
     flex-shrink: 0;
 }
 
-.feature-text h3 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 2px;
-}
-
-.feature-text p {
-    font-size: 11px;
-    color: var(--wechat-text-secondary);
-}
+.feature-text h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.feature-text p { font-size: 11px; color: var(--wechat-text-secondary); }
 
 /* 公告 */
-.notice-list {
-    padding: 0 16px 16px;
-}
+.notice-list { padding: 0 16px 16px; }
 
 .notice-item {
     background: var(--wechat-white);
@@ -440,40 +367,15 @@ body {
     cursor: pointer;
 }
 
-.notice-tag {
-    font-size: 11px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: #e8f5e9;
-    color: var(--wechat-green);
-    white-space: nowrap;
-}
-
-.notice-tag.hot {
-    background: #fff3e0;
-    color: #F57C00;
-}
-
-.notice-text {
-    flex: 1;
-    font-size: 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.notice-time {
-    font-size: 11px;
-    color: var(--wechat-text-secondary);
-    white-space: nowrap;
-}
+.notice-tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #e8f5e9; color: var(--wechat-green); white-space: nowrap; }
+.notice-tag.hot { background: #fff3e0; color: #F57C00; }
+.notice-text { flex: 1; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.notice-time { font-size: 11px; color: var(--wechat-text-secondary); white-space: nowrap; }
 
 /* ========================================
    景点列表
    ======================================== */
-.scenic-list {
-    padding: 12px;
-}
+.scenic-list { padding: 12px; }
 
 .scenic-card {
     background: var(--wechat-white);
@@ -483,111 +385,32 @@ body {
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-.scenic-img {
-    height: 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.scenic-emoji {
-    font-size: 48px;
-}
-
-.scenic-info {
-    padding: 12px 16px;
-}
-
-.scenic-info h3 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.scenic-desc {
-    font-size: 13px;
-    color: var(--wechat-text-secondary);
-    margin-bottom: 8px;
-}
-
-.scenic-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.scenic-price {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--wechat-danger);
-}
-
-.scenic-status {
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 12px;
-}
-
-.scenic-status.available {
-    background: #e8f5e9;
-    color: var(--wechat-green);
-}
-
-.scenic-status.sold-out {
-    background: #f5f5f5;
-    color: var(--wechat-text-secondary);
-}
+.scenic-img { height: 140px; display: flex; align-items: center; justify-content: center; }
+.scenic-emoji { font-size: 48px; }
+.scenic-info { padding: 12px 16px; }
+.scenic-info h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.scenic-desc { font-size: 13px; color: var(--wechat-text-secondary); margin-bottom: 8px; }
+.scenic-meta { display: flex; justify-content: space-between; align-items: center; }
+.scenic-price { font-size: 16px; font-weight: 700; color: var(--wechat-danger); }
+.scenic-status { font-size: 12px; padding: 4px 10px; border-radius: 12px; }
+.scenic-status.available { background: #e8f5e9; color: var(--wechat-green); }
+.scenic-status.sold-out { background: #f5f5f5; color: var(--wechat-text-secondary); }
 
 /* ========================================
    预约页面
    ======================================== */
-.empty-state {
-    text-align: center;
-    padding: 80px 40px;
-}
+.empty-state { text-align: center; padding: 80px 40px; }
+.empty-icon { font-size: 64px; margin-bottom: 16px; }
+.empty-state h3 { font-size: 18px; margin-bottom: 8px; }
+.empty-state p { font-size: 14px; color: var(--wechat-text-secondary); margin-bottom: 24px; }
 
-.empty-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
-}
-
-.empty-state h3 {
-    font-size: 18px;
-    margin-bottom: 8px;
-}
-
-.empty-state p {
-    font-size: 14px;
-    color: var(--wechat-text-secondary);
-    margin-bottom: 24px;
-}
-
-.booking-entry {
-    padding: 16px;
-}
-
-.entry-header {
-    margin-bottom: 16px;
-}
-
-.entry-header h3 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-
-.entry-header p {
-    font-size: 13px;
-    color: var(--wechat-text-secondary);
-}
+.booking-entry { padding: 16px; }
+.entry-header { margin-bottom: 16px; }
+.entry-header h3 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.entry-header p { font-size: 13px; color: var(--wechat-text-secondary); }
 
 /* 表单项 */
-.entry-form {
-    background: var(--wechat-white);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 16px;
-}
+.entry-form { background: var(--wechat-white); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
 
 .form-item {
     display: flex;
@@ -597,9 +420,7 @@ body {
     border-bottom: 0.5px solid var(--wechat-border);
 }
 
-.form-item:last-child {
-    border-bottom: none;
-}
+.form-item:last-child { border-bottom: none; }
 
 .form-item-icon {
     width: 32px;
@@ -615,40 +436,15 @@ body {
     flex-shrink: 0;
 }
 
-.form-item-content {
-    flex: 1;
-}
-
-.form-item-content label {
-    display: block;
-    font-size: 13px;
-    color: var(--wechat-text-secondary);
-    margin-bottom: 2px;
-}
-
-.form-item-content span {
-    font-size: 15px;
-    font-weight: 500;
-}
-
-.form-item-arrow {
-    color: var(--wechat-text-secondary);
-    font-size: 12px;
-}
+.form-item-content { flex: 1; }
+.form-item-content label { display: block; font-size: 13px; color: var(--wechat-text-secondary); margin-bottom: 2px; }
+.form-item-content span { font-size: 15px; font-weight: 500; }
+.form-item-arrow { color: var(--wechat-text-secondary); font-size: 12px; }
 
 /* 时段选择 */
-.time-slots {
-    background: var(--wechat-white);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-}
+.time-slots { background: var(--wechat-white); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
 
-.time-slots-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
+.time-slots-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 .time-slot-btn {
     border: 1.5px solid var(--wechat-border);
@@ -660,44 +456,15 @@ body {
     transition: all 0.2s;
 }
 
-.time-slot-btn.selected {
-    border-color: var(--wechat-green);
-    background: #e8f5e9;
-}
-
-.slot-time {
-    display: block;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.slot-status {
-    font-size: 11px;
-    color: var(--wechat-green);
-}
-
-.slot-status.warn {
-    color: var(--wechat-warning);
-}
+.time-slot-btn.selected { border-color: var(--wechat-green); background: #e8f5e9; }
+.slot-time { display: block; font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.slot-status { font-size: 11px; color: var(--wechat-green); }
+.slot-status.warn { color: var(--wechat-warning); }
 
 /* 票种选择 */
-.ticket-section {
-    background: var(--wechat-white);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-}
-
-.ticket-section h4 {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-.ticket-list {
-    margin-bottom: 12px;
-}
+.ticket-section { background: var(--wechat-white); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.ticket-section h4 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+.ticket-list { margin-bottom: 12px; }
 
 .ticket-item {
     display: flex;
@@ -706,37 +473,13 @@ body {
     border-bottom: 0.5px solid var(--wechat-border);
 }
 
-.ticket-item:last-child {
-    border-bottom: none;
-}
+.ticket-item:last-child { border-bottom: none; }
+.ticket-info { flex: 1; }
+.ticket-name { font-size: 15px; font-weight: 500; display: block; }
+.ticket-desc { font-size: 12px; color: var(--wechat-text-secondary); }
+.ticket-price { font-size: 15px; font-weight: 600; color: var(--wechat-danger); margin-right: 12px; }
 
-.ticket-info {
-    flex: 1;
-}
-
-.ticket-name {
-    font-size: 15px;
-    font-weight: 500;
-    display: block;
-}
-
-.ticket-desc {
-    font-size: 12px;
-    color: var(--wechat-text-secondary);
-}
-
-.ticket-price {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--wechat-danger);
-    margin-right: 12px;
-}
-
-.ticket-counter {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+.ticket-counter { display: flex; align-items: center; gap: 12px; }
 
 .counter-btn {
     width: 28px;
@@ -750,19 +493,10 @@ body {
     align-items: center;
     justify-content: center;
     color: var(--wechat-text);
-    transition: all 0.2s;
 }
 
-.counter-btn:active {
-    background: #f0f0f0;
-}
-
-.counter-val {
-    font-size: 16px;
-    font-weight: 600;
-    min-width: 20px;
-    text-align: center;
-}
+.counter-btn:active { background: #f0f0f0; }
+.counter-val { font-size: 16px; font-weight: 600; min-width: 20px; text-align: center; }
 
 .ticket-total {
     text-align: right;
@@ -774,15 +508,8 @@ body {
 }
 
 /* 身份选择区 */
-.identity-section {
-    margin-bottom: 16px;
-}
-
-.identity-section h4 {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
+.identity-section { margin-bottom: 16px; }
+.identity-section h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
 
 .identity-hint {
     font-size: 12px;
@@ -793,10 +520,7 @@ body {
     border-radius: 8px;
 }
 
-.identity-hint i {
-    color: var(--wechat-warning);
-    margin-right: 4px;
-}
+.identity-hint i { color: var(--wechat-warning); margin-right: 4px; }
 
 .identity-cards {
     display: flex;
@@ -807,7 +531,7 @@ body {
 }
 
 .identity-card {
-    min-width: 160px;
+    min-width: 150px;
     background: var(--wechat-white);
     border: 1.5px solid var(--wechat-border);
     border-radius: 12px;
@@ -817,66 +541,71 @@ body {
     flex-shrink: 0;
 }
 
-.identity-card.selected {
-    border-color: var(--wechat-green);
-    background: #e8f5e9;
-}
+.identity-card.selected { border-color: var(--wechat-green); background: #e8f5e9; }
+.identity-card:active { transform: scale(0.97); }
+.identity-avatar { font-size: 28px; margin-bottom: 6px; }
+.identity-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.identity-phone { font-size: 12px; color: var(--wechat-text-secondary); margin-bottom: 4px; }
+.identity-id { font-size: 11px; color: var(--wechat-text-secondary); word-break: break-all; }
+.identity-usage { font-size: 11px; color: var(--wechat-danger); margin-top: 6px; }
 
-.identity-card:active {
-    transform: scale(0.97);
-}
+.entry-actions { margin-top: 16px; }
 
-.identity-avatar {
-    font-size: 28px;
-    margin-bottom: 6px;
-}
+/* 虚拟手机号选择 */
+.virtual-phone-select { position: relative; }
 
-.identity-name {
+.virtual-phone-selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    border: 1px solid var(--wechat-border);
+    border-radius: 8px;
+    padding: 0 12px;
     font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 2px;
+    cursor: pointer;
+    background: var(--wechat-white);
 }
 
-.identity-phone {
-    font-size: 12px;
-    color: var(--wechat-text-secondary);
-    margin-bottom: 4px;
+.virtual-phone-selected i { color: var(--wechat-text-secondary); font-size: 12px; }
+
+.virtual-phone-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--wechat-white);
+    border: 1px solid var(--wechat-border);
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.identity-id {
-    font-size: 11px;
-    color: var(--wechat-text-secondary);
-    word-break: break-all;
+.virtual-phone-dropdown.show, .virtual-phone-dropdown.open { display: block; }
+
+.phone-option {
+    padding: 12px;
+    border-bottom: 0.5px solid var(--wechat-border);
+    cursor: pointer;
+    font-size: 14px;
 }
 
-.identity-usage {
-    font-size: 11px;
-    color: var(--wechat-danger);
-    margin-top: 6px;
-}
-
-.entry-actions {
-    margin-top: 16px;
-}
+.phone-option:last-child { border-bottom: none; }
+.phone-option:active { background: #f5f5f5; }
+.phone-option .phone-number { font-weight: 500; }
+.phone-option .phone-owner { font-size: 12px; color: var(--wechat-text-secondary); }
 
 /* ========================================
    排队页面
    ======================================== */
-.queue-view {
-    padding: 24px 16px;
-}
+.queue-view { padding: 24px 16px; }
+.queue-header { text-align: center; margin-bottom: 20px; }
 
-.queue-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.queue-dots {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    margin-bottom: 16px;
-}
+.queue-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 16px; }
 
 .queue-dots span {
     width: 10px;
@@ -891,25 +620,15 @@ body {
 .queue-dots span:nth-child(4) { animation-delay: 0.45s; }
 .queue-dots span:nth-child(5) { animation-delay: 0.6s; }
 
-.queue-header h3 {
-    font-size: 18px;
-    margin-bottom: 8px;
+@keyframes dotPulse {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
 }
 
-.queue-header p {
-    font-size: 14px;
-    color: var(--wechat-text-secondary);
-}
-
-.queue-header strong {
-    color: var(--wechat-danger);
-    font-size: 20px;
-}
-
-.queue-eta {
-    font-size: 13px;
-    margin-top: 4px;
-}
+.queue-header h3 { font-size: 18px; margin-bottom: 8px; }
+.queue-header p { font-size: 14px; color: var(--wechat-text-secondary); }
+.queue-header strong { color: var(--wechat-danger); font-size: 20px; }
+.queue-eta { font-size: 13px; margin-top: 4px; }
 
 .queue-warning {
     background: #fff8e1;
@@ -921,31 +640,14 @@ body {
     text-align: center;
 }
 
-.queue-warning i {
-    margin-right: 4px;
-}
-
-.queue-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-}
-
-.queue-actions .btn-outline,
-.queue-actions .btn-primary {
-    flex: 1;
-}
+.queue-warning i { margin-right: 4px; }
+.queue-actions { display: flex; gap: 12px; margin-top: 16px; }
+.queue-actions .btn-outline, .queue-actions .btn-primary { flex: 1; }
 
 /* ========================================
    个人信息Tab
    ======================================== */
-.profile-header {
-    background: var(--wechat-white);
-    padding: 32px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
+.profile-header { background: var(--wechat-white); padding: 32px 24px; display: flex; align-items: center; gap: 16px; }
 
 .profile-avatar {
     width: 56px;
@@ -958,21 +660,10 @@ body {
     font-size: 28px;
 }
 
-.profile-info h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 2px;
-}
+.profile-info h3 { font-size: 18px; font-weight: 600; margin-bottom: 2px; }
+.profile-info p { font-size: 13px; color: var(--wechat-text-secondary); }
 
-.profile-info p {
-    font-size: 13px;
-    color: var(--wechat-text-secondary);
-}
-
-.profile-menu {
-    margin-top: 12px;
-    background: var(--wechat-white);
-}
+.profile-menu { margin-top: 12px; background: var(--wechat-white); }
 
 .menu-item {
     display: flex;
@@ -982,13 +673,8 @@ body {
     cursor: pointer;
 }
 
-.menu-item:active {
-    background: #f5f5f5;
-}
-
-.menu-item:last-child {
-    border-bottom: none;
-}
+.menu-item:active { background: #f5f5f5; }
+.menu-item:last-child { border-bottom: none; }
 
 .menu-icon {
     width: 28px;
@@ -1001,10 +687,7 @@ body {
     font-size: 14px;
 }
 
-.menu-item span:nth-child(2) {
-    flex: 1;
-    font-size: 15px;
-}
+.menu-item span:nth-child(2) { flex: 1; font-size: 15px; }
 
 .menu-badge {
     background: var(--wechat-danger);
@@ -1015,28 +698,11 @@ body {
     margin-right: 8px;
 }
 
-.menu-extra {
-    font-size: 13px;
-    color: var(--wechat-text-secondary);
-    margin-right: 8px;
-}
+.menu-extra { font-size: 13px; color: var(--wechat-text-secondary); margin-right: 8px; }
+.menu-item > i:last-child { color: var(--wechat-text-secondary); font-size: 12px; }
 
-.menu-item > i:last-child {
-    color: var(--wechat-text-secondary);
-    font-size: 12px;
-}
-
-.profile-footer {
-    text-align: center;
-    padding: 24px;
-    color: var(--wechat-text-secondary);
-    font-size: 12px;
-}
-
-.footer-joke {
-    margin-top: 4px;
-    font-size: 11px;
-}
+.profile-footer { text-align: center; padding: 24px; color: var(--wechat-text-secondary); font-size: 12px; }
+.footer-joke { margin-top: 4px; font-size: 11px; }
 
 /* ========================================
    Toast
@@ -1059,23 +725,13 @@ body {
     text-align: center;
 }
 
-.toast.show {
-    opacity: 1;
-}
+.toast.show { opacity: 1; }
 
 /* ========================================
    表单元素
    ======================================== */
-.form-group {
-    margin-bottom: 16px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 8px;
-}
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
 
 .form-group input[type="text"],
 .form-group input[type="number"] {
@@ -1086,19 +742,12 @@ body {
     padding: 0 12px;
     font-size: 15px;
     outline: none;
-    transition: border-color 0.2s;
     background: var(--wechat-white);
 }
 
-.form-group input:focus {
-    border-color: var(--wechat-green);
-}
+.form-group input:focus { border-color: var(--wechat-green); }
 
-.input-with-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+.input-with-btn { display: flex; align-items: center; gap: 8px; }
 
 .input-with-btn input {
     flex: 1;
@@ -1119,49 +768,7 @@ body {
     color: var(--wechat-text-secondary);
 }
 
-.form-check input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--wechat-green);
-}
+.form-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--wechat-green); }
 
-/* ========================================
-   滚动条美化
-   ======================================== */
-.page::-webkit-scrollbar {
-    width: 0;
-}
-
-/* ========================================
-   响应式适配
-   ======================================== */
-@media (max-width: 420px) {
-    body {
-        background: var(--wechat-bg);
-    }
-
-    .phone-simulator {
-        width: 100%;
-        height: 100vh;
-    }
-
-    .phone-frame {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        padding: 0;
-        box-shadow: none;
-    }
-
-    .phone-notch {
-        display: none;
-    }
-
-    .phone-screen {
-        border-radius: 0;
-    }
-
-    .status-bar {
-        height: 24px;
-    }
-}
+/* 滚动条 */
+.page::-webkit-scrollbar { width: 0; }
