@@ -84,12 +84,31 @@ function startReleaseCountdown() {
             banner.style.display = 'none';
             localStorage.removeItem(RELEASE_TIME_KEY);
             releaseTime = 0;
-            currentSpotsData = null;
-            loadScenicSpots();
             showMessage('系统已放票，请尽快预约', 'success');
+            forceLoadAvailableTickets();
             startBookingPhase();
         }
     }, 1000);
+}
+
+function forceLoadAvailableTickets() {
+    // 跳过API请求，直接生成有余票的本地数据
+    if (typeof SCENIC_SPOTS !== 'undefined') {
+        currentSpotsData = Object.values(SCENIC_SPOTS).map(spot => ({
+            ...spot,
+            slots: spot.timeSlots.map(slot => ({
+                time: slot.id,
+                label: slot.label,
+                timeRange: slot.time,
+                remaining: Math.floor(Math.random() * 50000) + 1000,
+                total: spot.maxDailyCapacity / 2,
+                displayStatus: 'available'
+            }))
+        }));
+    }
+    stopReleaseCountdown();
+    updateScenicPage();
+    updateTicketPrices();
 }
 
 function stopReleaseCountdown() {
@@ -103,20 +122,37 @@ function stopReleaseCountdown() {
     releaseTime = 0;
 }
 
+const BOOKING_PHASE_DURATION = 45;
+
 function startBookingPhase() {
     stopBookingPhase();
-    bookingPhaseTimer = setTimeout(() => {
-        bookingPhaseTimer = null;
-        showMessage('本轮未完成预约，自动进入下一轮', 'warning');
-        startNextRound();
-    }, 30000);
+    const banner = document.getElementById('booking-phase-banner');
+    const timer = document.getElementById('booking-phase-timer');
+    if (banner) banner.style.display = 'block';
+    if (timer) timer.textContent = BOOKING_PHASE_DURATION;
+
+    let remaining = BOOKING_PHASE_DURATION;
+    bookingPhaseTimer = setInterval(() => {
+        remaining--;
+        const timerEl = document.getElementById('booking-phase-timer');
+        if (timerEl) timerEl.textContent = Math.max(0, remaining);
+        if (remaining <= 0) {
+            clearInterval(bookingPhaseTimer);
+            bookingPhaseTimer = null;
+            if (banner) banner.style.display = 'none';
+            showMessage('本轮未完成预约，自动进入下一轮', 'warning');
+            startNextRound();
+        }
+    }, 1000);
 }
 
 function stopBookingPhase() {
     if (bookingPhaseTimer) {
-        clearTimeout(bookingPhaseTimer);
+        clearInterval(bookingPhaseTimer);
         bookingPhaseTimer = null;
     }
+    const banner = document.getElementById('booking-phase-banner');
+    if (banner) banner.style.display = 'none';
 }
 
 function startNextRound() {

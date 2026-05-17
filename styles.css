@@ -841,5 +841,63 @@ body {
     opacity: 0.75;
 }
 
+/* 预约窗口横幅 */
+.booking-phase-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 14px 16px;
+    margin: 0;
+    text-align: center;
+    animation: bookingPhasePulse 2s ease-in-out infinite;
+}
+
+@keyframes bookingPhasePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.9; }
+}
+
+.booking-phase-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.booking-phase-icon {
+    font-size: 32px;
+    line-height: 1;
+    animation: releaseBounce 1s ease-in-out infinite;
+}
+
+.booking-phase-info {
+    text-align: left;
+}
+
+.booking-phase-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.booking-phase-countdown-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.booking-phase-timer {
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 2ch;
+    display: inline-block;
+    text-align: center;
+}
+
+.booking-phase-label {
+    font-size: 12px;
+    opacity: 0.85;
+}
+
 /* 滚动条 */
 .page::-webkit-scrollbar { width: 0; }
