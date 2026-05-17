@@ -2,7 +2,7 @@
 // GET /api/scenic-spots?date=YYYY-MM-DD
 // ========================================
 
-import { SPOTS, initInventory, getNext7Days, concurrentUsers } from './_shared/store.mjs';
+import { SPOTS, initInventory, getNext7Days, concurrentUsers, getReleaseTime, getCountdown } from './_shared/store.mjs';
 
 export const handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
@@ -89,7 +89,12 @@ export const handler = async (event) => {
       };
     });
 
-    return resp(200, { spots, serverTime: new Date().toISOString() });
+    return resp(200, {
+      spots,
+      serverTime: new Date().toISOString(),
+      releaseTime: getReleaseTime(),
+      countdown: getCountdown()
+    });
   } catch (err) {
     return resp(500, { error: '服务器错误' });
   }

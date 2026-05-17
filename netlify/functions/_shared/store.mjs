@@ -27,18 +27,38 @@ const SPOTS = {
   badaling: { name: '圆明园遗址公园', alias: '东洋遗址', maxDaily: 50000, closedDays: [1] }
 };
 
+// 放票时间（服务器启动后1分钟）
+const RELEASE_DELAY = 60000;
+let releaseTime = Date.now() + RELEASE_DELAY;
+
+function getReleaseTime() {
+  return releaseTime;
+}
+
+function getCountdown() {
+  return Math.max(0, Math.floor((releaseTime - Date.now()) / 1000));
+}
+
 // 初始化库存
 function initInventory(spotId, date) {
   if (!inventory[spotId]) inventory[spotId] = {};
   if (!inventory[spotId][date]) {
     const spot = SPOTS[spotId];
     const capPerSlot = spot ? spot.maxDaily / 2 : 40000;
-    // 随机预消耗 30%-80%
-    const consumed = Math.floor(capPerSlot * (0.3 + Math.random() * 0.5));
-    inventory[spotId][date] = {
-      morning: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.6) },
-      afternoon: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.4) }
-    };
+    // 放票时间未到：全部显示已售罄
+    if (Date.now() < releaseTime) {
+      inventory[spotId][date] = {
+        morning: { total: capPerSlot, remaining: 0 },
+        afternoon: { total: capPerSlot, remaining: 0 }
+      };
+    } else {
+      // 随机预消耗 30%-80%
+      const consumed = Math.floor(capPerSlot * (0.3 + Math.random() * 0.5));
+      inventory[spotId][date] = {
+        morning: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.6) },
+        afternoon: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.4) }
+      };
+    }
   }
   return inventory[spotId][date];
 }
@@ -79,4 +99,4 @@ function updateConcurrent() {
 updateConcurrent();
 setInterval(updateConcurrent, 5000);
 
-export { inventory, users, bookings, queue, concurrentUsers, SPOTS, initInventory, getDateStr, getNext7Days, generateCode, generateBookingId };
+export { inventory, users, bookings, queue, concurrentUsers, SPOTS, initInventory, getDateStr, getNext7Days, generateCode, generateBookingId, getReleaseTime, getCountdown };

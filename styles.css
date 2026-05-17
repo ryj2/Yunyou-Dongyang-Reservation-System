@@ -770,5 +770,76 @@ body {
 
 .form-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--wechat-green); }
 
+/* ========================================
+   放票倒计时横幅
+   ======================================== */
+.release-banner {
+    background: linear-gradient(135deg, #FF6B6B 0%, #ee5a24 100%);
+    color: #fff;
+    padding: 16px;
+    margin: 0;
+    text-align: center;
+    animation: releasePulse 2s ease-in-out infinite;
+}
+
+@keyframes releasePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.92; }
+}
+
+.release-banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.release-icon-wrap {
+    font-size: 36px;
+    line-height: 1;
+    animation: releaseBounce 1s ease-in-out infinite;
+}
+
+@keyframes releaseBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.release-info {
+    text-align: left;
+}
+
+.release-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.release-countdown-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.release-countdown-label {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.release-timer {
+    font-size: 28px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 2ch;
+    display: inline-block;
+    text-align: center;
+}
+
+.release-hint {
+    font-size: 11px;
+    opacity: 0.75;
+}
+
 /* 滚动条 */
 .page::-webkit-scrollbar { width: 0; }

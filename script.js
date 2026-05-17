@@ -38,6 +38,70 @@ let selectedVirtualPhone = '';
 let phoneDropdownOpen = false;
 
 // ========================================
+// 放票倒计时
+// ========================================
+const RELEASE_TIME_KEY = 'dongyang_release_time';
+let releaseTime = 0;
+let releaseTimer = null;
+
+function initReleaseTime() {
+    const saved = localStorage.getItem(RELEASE_TIME_KEY);
+    if (saved) {
+        releaseTime = parseInt(saved, 10);
+        if (Date.now() >= releaseTime) {
+            localStorage.removeItem(RELEASE_TIME_KEY);
+            releaseTime = 0;
+        }
+    } else {
+        releaseTime = Date.now() + 60000;
+        localStorage.setItem(RELEASE_TIME_KEY, releaseTime.toString());
+    }
+}
+
+function isBeforeRelease() {
+    return releaseTime > 0 && Date.now() < releaseTime;
+}
+
+function getReleaseSeconds() {
+    return Math.max(0, Math.ceil((releaseTime - Date.now()) / 1000));
+}
+
+function startReleaseCountdown() {
+    const banner = document.getElementById('release-banner');
+    const timer = document.getElementById('release-timer');
+    if (!banner || !timer) return;
+
+    banner.style.display = 'block';
+    timer.textContent = getReleaseSeconds();
+
+    releaseTimer = setInterval(() => {
+        const secs = getReleaseSeconds();
+        timer.textContent = secs;
+        if (secs <= 0) {
+            clearInterval(releaseTimer);
+            releaseTimer = null;
+            banner.style.display = 'none';
+            localStorage.removeItem(RELEASE_TIME_KEY);
+            releaseTime = 0;
+            currentSpotsData = null;
+            loadScenicSpots();
+            showMessage('系统已放票，请尽快预约', 'success');
+        }
+    }, 1000);
+}
+
+function stopReleaseCountdown() {
+    if (releaseTimer) {
+        clearInterval(releaseTimer);
+        releaseTimer = null;
+    }
+    const banner = document.getElementById('release-banner');
+    if (banner) banner.style.display = 'none';
+    localStorage.removeItem(RELEASE_TIME_KEY);
+    releaseTime = 0;
+}
+
+// ========================================
 // 页面路由
 // ========================================
 function switchTab(tab) {
@@ -95,6 +159,9 @@ function goBack() {
 // 初始化
 // ========================================
 document.addEventListener('DOMContentLoaded', function() {
+    // 初始化放票倒计时
+    initReleaseTime();
+
     // 初始化虚拟手机号选择器
     initVirtualPhoneDropdown();
 
@@ -147,12 +214,46 @@ async function loadScenicSpots() {
         const result = await API.getScenicSpots();
         if (result && result.spots) {
             currentSpotsData = result.spots;
+            // 如果API返回了放票时间，覆盖本地时间
+            if (result.releaseTime && result.releaseTime > Date.now()) {
+                releaseTime = result.releaseTime;
+                localStorage.setItem(RELEASE_TIME_KEY, releaseTime.toString());
+            } else if (result.releaseTime && result.releaseTime <= Date.now()) {
+                // 服务端已放票，清除本地倒计时
+                stopReleaseCountdown();
+            }
         }
     }
     // 如果API不可用或失败，使用本地scenic-data.js的数据
     if (!currentSpotsData && typeof SCENIC_SPOTS !== 'undefined') {
-        currentSpotsData = Object.values(SCENIC_SPOTS);
+        currentSpotsData = Object.values(SCENIC_SPOTS).map(spot => ({
+            ...spot,
+            slots: spot.timeSlots.map(slot => ({
+                time: slot.id,
+                label: slot.label,
+                timeRange: slot.time,
+                remaining: Math.floor(Math.random() * 50000) + 1000,
+                total: spot.maxDailyCapacity / 2,
+                displayStatus: 'available'
+            }))
+        }));
     }
+
+    // 放票时间未到：覆盖所有数据为已售罄
+    if (isBeforeRelease() && currentSpotsData) {
+        currentSpotsData.forEach(spot => {
+            if (spot.slots) {
+                spot.slots.forEach(slot => {
+                    slot.remaining = 0;
+                    slot.displayStatus = 'sold_out';
+                });
+            }
+        });
+        startReleaseCountdown();
+    } else {
+        stopReleaseCountdown();
+    }
+
     updateScenicPage();
     updateTicketPrices();
 }
