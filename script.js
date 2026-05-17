@@ -94,17 +94,33 @@ function startReleaseCountdown() {
 function forceLoadAvailableTickets() {
     // 跳过API请求，直接生成有余票的本地数据
     if (typeof SCENIC_SPOTS !== 'undefined') {
-        currentSpotsData = Object.values(SCENIC_SPOTS).map(spot => ({
-            ...spot,
-            slots: spot.timeSlots.map(slot => ({
-                time: slot.id,
-                label: slot.label,
-                timeRange: slot.time,
-                remaining: Math.floor(Math.random() * 50000) + 1000,
-                total: spot.maxDailyCapacity / 2,
-                displayStatus: 'available'
-            }))
-        }));
+        currentSpotsData = Object.values(SCENIC_SPOTS).map(spot => {
+            const total = spot.maxDailyCapacity / 2;
+            return {
+                ...spot,
+                slots: spot.timeSlots.map(slot => {
+                    const raw = Math.floor(Math.random() * total * 0.8) + Math.floor(total * 0.05);
+                    const remaining = Math.min(raw, total);
+                    const ratio = remaining / total;
+                    let displayStatus = 'available';
+                    if (remaining <= 0) {
+                        displayStatus = 'sold_out';
+                    } else if (ratio < 0.05) {
+                        displayStatus = 'scarce';
+                    } else if (ratio < 0.2) {
+                        displayStatus = 'warn';
+                    }
+                    return {
+                        time: slot.id,
+                        label: slot.label,
+                        timeRange: slot.time,
+                        remaining,
+                        total,
+                        displayStatus
+                    };
+                })
+            };
+        });
     }
     stopReleaseCountdown();
     updateScenicPage();
@@ -140,10 +156,59 @@ function startBookingPhase() {
             clearInterval(bookingPhaseTimer);
             bookingPhaseTimer = null;
             if (banner) banner.style.display = 'none';
-            showMessage('本轮未完成预约，自动进入下一轮', 'warning');
-            startNextRound();
+            showMessage('余票已刷新，请继续预约', 'warning');
+            refreshRemainingTickets();
+            startBookingPhase();
         }
     }, 1000);
+}
+
+function refreshRemainingTickets() {
+    // 优先从服务端获取最新余票数据
+    if (typeof API !== 'undefined') {
+        API.getScenicSpots().then(result => {
+            if (result && result.spots) {
+                currentSpotsData = result.spots;
+                updateScenicPage();
+                const container = document.querySelector('.time-slots-grid');
+                if (container && selectedDate) {
+                    loadTimeSlots();
+                }
+                return;
+            }
+            refreshRemainingTicketsLocal();
+        }).catch(() => refreshRemainingTicketsLocal());
+    } else {
+        refreshRemainingTicketsLocal();
+    }
+}
+
+function refreshRemainingTicketsLocal() {
+    if (!currentSpotsData) return;
+    currentSpotsData.forEach(spot => {
+        if (spot.slots) {
+            spot.slots.forEach(slot => {
+                const total = slot.total || 40000;
+                const raw = Math.floor(Math.random() * total * 0.8) + Math.floor(total * 0.05);
+                slot.remaining = Math.min(raw, total);
+                const ratio = slot.remaining / total;
+                if (slot.remaining <= 0) {
+                    slot.displayStatus = 'sold_out';
+                } else if (ratio < 0.05) {
+                    slot.displayStatus = 'scarce';
+                } else if (ratio < 0.2) {
+                    slot.displayStatus = 'warn';
+                } else {
+                    slot.displayStatus = 'available';
+                }
+            });
+        }
+    });
+    updateScenicPage();
+    const container = document.querySelector('.time-slots-grid');
+    if (container && selectedDate) {
+        loadTimeSlots();
+    }
 }
 
 function stopBookingPhase() {
@@ -804,8 +869,9 @@ async function loadTimeSlots() {
 
     container.innerHTML = '';
     slots.forEach(slot => {
-        const remaining = Math.floor(Math.random() * 50000) + 1000;
         const total = config ? config.maxDailyCapacity / 2 : 40000;
+        const raw = Math.floor(Math.random() * total * 0.8) + Math.floor(total * 0.05);
+        const remaining = Math.min(raw, total);
         const ratio = remaining / total;
 
         let statusClass = '';
