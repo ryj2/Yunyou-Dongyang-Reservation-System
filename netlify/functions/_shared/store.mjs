@@ -49,16 +49,28 @@ function initInventory(spotId, date) {
     if (Date.now() < releaseTime) {
       inventory[spotId][date] = {
         morning: { total: capPerSlot, remaining: 0 },
-        afternoon: { total: capPerSlot, remaining: 0 }
+        afternoon: { total: capPerSlot, remaining: 0 },
+        _releaseInit: false
       };
     } else {
       // 随机预消耗 30%-80%
       const consumed = Math.floor(capPerSlot * (0.3 + Math.random() * 0.5));
       inventory[spotId][date] = {
         morning: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.6) },
-        afternoon: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.4) }
+        afternoon: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.4) },
+        _releaseInit: true
       };
     }
+  } else if (Date.now() >= releaseTime && inventory[spotId][date]._releaseInit === false) {
+    // 放票前初始化过缓存 → 放票时间到了，重新初始化真实库存
+    const spot = SPOTS[spotId];
+    const capPerSlot = spot ? spot.maxDaily / 2 : 40000;
+    const consumed = Math.floor(capPerSlot * (0.3 + Math.random() * 0.5));
+    inventory[spotId][date] = {
+      morning: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.6) },
+      afternoon: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.4) },
+      _releaseInit: true
+    };
   }
   return inventory[spotId][date];
 }
