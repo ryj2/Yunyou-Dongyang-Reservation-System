@@ -72,7 +72,7 @@ const achievements = {
     error_10: {
         name: '错误收藏家',
         desc: '遇到10种不同的错误',
-        icon: '收集',
+        icon: '📝',
         unlocked: false
     },
     monday_visitor: {
@@ -91,6 +91,31 @@ const achievements = {
         name: '耐心大师',
         desc: '使用系统超过10分钟',
         icon: '🧘',
+        unlocked: false
+    },
+    // 新增成就
+    server_error: {
+        name: '服务器开小差了',
+        desc: '遇到服务器错误',
+        icon: '🔥',
+        unlocked: false
+    },
+    real_id_used: {
+        name: '实名制受害者',
+        desc: '手动输入真实身份证',
+        icon: '🪪',
+        unlocked: false
+    },
+    queue_survived: {
+        name: '排队幸存者',
+        desc: '成功完成排队',
+        icon: '🎖️',
+        unlocked: false
+    },
+    refresh_persisted: {
+        name: '刷新不丢',
+        desc: '刷新页面后数据仍在',
+        icon: '💾',
         unlocked: false
     }
 };
@@ -122,6 +147,12 @@ function unlockAchievement(id) {
     if (!achievements[id] || achievements[id].unlocked) return;
 
     achievements[id].unlocked = true;
+    achievements[id].unlockedAt = Date.now();
+
+    // 持久化到localStorage
+    if (typeof Storage !== 'undefined') {
+        Storage.saveAchievements(achievements);
+    }
 
     // 显示成就通知
     showAchievementToast(achievements[id].name, achievements[id].icon);
@@ -179,9 +210,6 @@ window.showCaptchaGame = function() {
     }
     if (originalShowCaptchaGame) originalShowCaptchaGame();
 };
-
-// 监听抽签失败
-const originalShowLotteryResult = window.showLotteryResult;
 
 // 监听AI客服对话
 const originalAskQuickQuestion = window.askQuickQuestion;

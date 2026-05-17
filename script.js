@@ -8,16 +8,20 @@ let currentUser = null;
 let currentTab = 'home';
 let selectedDate = '';
 let selectedTime = '';
+let selectedSpotId = 'gugong'; // 默认选中紫禁城
 let ticketCounts = { adult: 0, child: 0, senior: 0 };
 let selectedIdentity = null;
 let selectedPaymentMethod = 'wechat';
 let queueInterval = null;
-let queuePosition = 2847;
+let queuePosition = 0;
 let toastTimer = null;
 let bookingState = 'entry'; // entry, date, time, ticket, identity, queue
+let currentBookingId = null;
+let hasAgreedSession = false; // 本次会话是否已同意过协议
+let currentSpotsData = null; // 当前景点数据
 
-// 票价配置
-const ticketPrices = { adult: 128, child: 68, senior: 88 };
+// 票价配置（从scenic-data.js动态获取）
+let ticketPrices = { adult: 60, child: 30, senior: 30 };
 
 // 虚拟手机号列表
 const virtualPhones = [
@@ -94,12 +98,129 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化虚拟手机号选择器
     initVirtualPhoneDropdown();
 
+    // 从localStorage恢复登录状态
+    const savedUser = Storage.getUser();
+    if (savedUser && savedUser.phone) {
+        isLoggedIn = true;
+        currentUser = { phone: savedUser.phone };
+        document.getElementById('profile-name').textContent = '东洋游客';
+        document.getElementById('profile-phone').textContent = savedUser.phone;
+        document.getElementById('profile-avatar').textContent = '😊';
+    }
+
+    // 从localStorage恢复成就进度
+    const savedAchievements = Storage.getAchievements();
+    if (savedAchievements && typeof achievements !== 'undefined') {
+        for (const [key, val] of Object.entries(savedAchievements)) {
+            if (achievements[key]) {
+                achievements[key].unlocked = val.unlocked;
+                achievements[key].unlockedAt = val.unlockedAt;
+            }
+        }
+        if (typeof getUnlockedCount === 'function') {
+            const badge = document.getElementById('achievement-badge');
+            if (badge) badge.textContent = getUnlockedCount();
+        }
+    }
+
+    // 从localStorage恢复排队状态
+    const savedQueue = Storage.getQueueState();
+    if (savedQueue && isLoggedIn) {
+        bookingState = 'queue';
+        queuePosition = savedQueue.queuePosition || 0;
+        selectedSpotId = savedQueue.spotId || 'gugong';
+    }
+
+    // 加载景点数据
+    loadScenicSpots();
+
     // 加载动画
     setTimeout(() => {
         document.getElementById('loading-screen').style.display = 'none';
         document.getElementById('home-content').style.display = 'block';
     }, 2500);
 });
+
+// 加载景点数据
+async function loadScenicSpots() {
+    if (typeof API !== 'undefined') {
+        const result = await API.getScenicSpots();
+        if (result && result.spots) {
+            currentSpotsData = result.spots;
+        }
+    }
+    // 如果API不可用或失败，使用本地scenic-data.js的数据
+    if (!currentSpotsData && typeof SCENIC_SPOTS !== 'undefined') {
+        currentSpotsData = Object.values(SCENIC_SPOTS);
+    }
+    updateScenicPage();
+    updateTicketPrices();
+}
+
+// 更新景点页面
+function updateScenicPage() {
+    const list = document.querySelector('.scenic-list');
+    if (!list || !currentSpotsData) return;
+
+    list.innerHTML = '';
+    currentSpotsData.forEach(spot => {
+        const config = typeof SCENIC_SPOTS !== 'undefined' ? SCENIC_SPOTS[spot.id] : null;
+        const name = config ? config.alias || config.name : spot.name;
+        const emoji = config ? config.emoji : '🏯';
+        const gradient = config ? config.gradient : 'linear-gradient(135deg, #667eea, #764ba2)';
+        const price = config ? config.ticketPrices.adult : (spot.ticketPrices ? spot.ticketPrices.adult : 60);
+
+        // 计算状态
+        let statusClass = 'available';
+        let statusText = '可预约';
+        if (spot.isClosed) {
+            statusClass = 'closed';
+            statusText = '闭馆';
+        } else if (spot.slots) {
+            const totalRemaining = spot.slots.reduce((sum, s) => sum + (s.remaining || 0), 0);
+            if (totalRemaining <= 0) {
+                statusClass = 'sold-out';
+                statusText = '已售罄';
+            } else if (totalRemaining < 500) {
+                statusClass = 'scarce';
+                statusText = '余票紧张';
+            }
+        }
+
+        const card = document.createElement('div');
+        card.className = 'scenic-card';
+        card.onclick = () => selectScenicSpot(spot.id);
+        card.innerHTML = `
+            <div class="scenic-img" style="background:${gradient};"><span class="scenic-emoji">${emoji}</span></div>
+            <div class="scenic-info">
+                <h3>${name}</h3><p class="scenic-desc">${config ? config.description : ''}</p>
+                <div class="scenic-meta"><span class="scenic-price">¥${price}/人</span><span class="scenic-status ${statusClass}">${statusText}</span></div>
+            </div>
+        `;
+        list.appendChild(card);
+    });
+}
+
+// 选择景点
+function selectScenicSpot(spotId) {
+    selectedSpotId = spotId;
+    updateTicketPrices();
+    switchTab('booking');
+}
+
+// 更新票价
+function updateTicketPrices() {
+    if (typeof SCENIC_SPOTS !== 'undefined' && SCENIC_SPOTS[selectedSpotId]) {
+        ticketPrices = { ...SCENIC_SPOTS[selectedSpotId].ticketPrices };
+        // 更新票种选择区域的价格显示
+        const adultPriceEl = document.querySelector('.ticket-item:nth-child(1) .ticket-price');
+        const childPriceEl = document.querySelector('.ticket-item:nth-child(2) .ticket-price');
+        const seniorPriceEl = document.querySelector('.ticket-item:nth-child(3) .ticket-price');
+        if (adultPriceEl) adultPriceEl.textContent = `¥${ticketPrices.adult}`;
+        if (childPriceEl) childPriceEl.textContent = `¥${ticketPrices.child}`;
+        if (seniorPriceEl) seniorPriceEl.textContent = `¥${ticketPrices.senior}`;
+    }
+}
 
 function initVirtualPhoneDropdown() {
     const dropdown = document.getElementById('phone-dropdown');
@@ -161,7 +282,7 @@ function closeLoginSheet() {
 }
 
 // 发送验证码
-function sendVerificationCode() {
+async function sendVerificationCode() {
     if (!selectedVirtualPhone) {
         showMessage('请先选择虚拟手机号', 'error');
         return;
@@ -174,23 +295,34 @@ function sendVerificationCode() {
     }
 
     // 备用：直接发送
-    doSendCode();
+    await doSendCode();
 }
 
-function doSendCode() {
+async function doSendCode() {
     const btn = document.getElementById('send-code-btn');
     if (!btn) return;
 
-    // 20%概率发送失败
-    if (Math.random() < 0.2) {
-        showMessage('验证码发送失败，请重试', 'error');
-        return;
+    // 尝试通过API发送验证码
+    if (typeof API !== 'undefined') {
+        const result = await API.requestCode(selectedVirtualPhone);
+        if (result && result.code) {
+            // API返回验证码（演示模式）
+            showCodeNotification(result.code);
+            showMessage('验证码已发送', 'success');
+        } else if (result && result.success === false) {
+            showMessage(result.error || '验证码发送失败，请重试', 'error');
+            return;
+        }
+    } else {
+        // 本地模式：20%概率发送失败
+        if (Math.random() < 0.2) {
+            showMessage('验证码发送失败，请重试', 'error');
+            return;
+        }
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        showCodeNotification(code);
+        showMessage('验证码已发送', 'success');
     }
-
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    showCodeNotification(code);
-
-    showMessage('验证码已发送', 'success');
 
     // 倒计时
     let countdown = 60;
@@ -230,7 +362,7 @@ function showCodeNotification(code) {
 }
 
 // 执行登录
-function performLogin() {
+async function performLogin() {
     if (!selectedVirtualPhone) {
         showMessage('请先选择虚拟手机号', 'error');
         return;
@@ -249,16 +381,38 @@ function performLogin() {
         return;
     }
 
-    // 15%概率登录失败
-    if (Math.random() < 0.15) {
-        const errors = ['验证码错误', '验证码已过期', '系统繁忙，请稍后再试'];
-        showMessage(errors[Math.floor(Math.random() * errors.length)], 'error');
+    // 尝试通过API验证
+    let loginSuccess = false;
+    let loginError = '';
+
+    if (typeof API !== 'undefined') {
+        const result = await API.login(selectedVirtualPhone, code);
+        if (result && result.success) {
+            loginSuccess = true;
+        } else {
+            loginError = result ? result.error : '登录失败';
+        }
+    } else {
+        // 本地模式：15%概率登录失败
+        if (Math.random() < 0.15) {
+            const errors = ['验证码错误', '验证码已过期', '系统繁忙，请稍后再试'];
+            loginError = errors[Math.floor(Math.random() * errors.length)];
+        } else {
+            loginSuccess = true;
+        }
+    }
+
+    if (!loginSuccess) {
+        showMessage(loginError || '登录失败', 'error');
         return;
     }
 
     // 登录成功
     isLoggedIn = true;
     currentUser = { phone: selectedVirtualPhone };
+
+    // 持久化到localStorage
+    Storage.saveUser(selectedVirtualPhone);
 
     // 更新UI
     document.getElementById('profile-name').textContent = '东洋游客';
@@ -408,24 +562,122 @@ function confirmDate() {
     document.getElementById('display-date').textContent =
         `${dateObj.getMonth() + 1}月${dateObj.getDate()}日`;
 
-    // 40%概率触发协议
-    if (Math.random() < 0.4) {
+    // 本次会话首次预约时触发协议（更真实）
+    if (!hasAgreedSession) {
+        hasAgreedSession = true;
         showAgreementSheet();
         return;
     }
 
+    // 加载该日期的时段数据
+    loadTimeSlots();
+
     updateBookingPage();
+}
+
+// 加载时段数据
+async function loadTimeSlots() {
+    const container = document.querySelector('.time-slots-grid');
+    if (!container) return;
+
+    // 如果有API数据，使用真实数据
+    if (currentSpotsData && selectedSpotId) {
+        const spot = currentSpotsData.find(s => s.id === selectedSpotId);
+        if (spot && spot.slots) {
+            container.innerHTML = '';
+            spot.slots.forEach(slot => {
+                const remaining = slot.remaining || 0;
+                const total = slot.total || 40000;
+                const ratio = remaining / total;
+
+                let statusClass = '';
+                let statusText = '';
+                if (slot.displayStatus === 'sold_out' || remaining <= 0) {
+                    statusClass = 'sold-out';
+                    statusText = '已售罄';
+                } else if (ratio < 0.05) {
+                    statusClass = 'scarce';
+                    statusText = '即将售罄';
+                } else if (ratio < 0.2) {
+                    statusClass = 'warn';
+                    statusText = '余票紧张';
+                } else {
+                    statusText = '余票充足';
+                }
+
+                const btn = document.createElement('button');
+                btn.className = `time-slot-btn ${statusClass}`;
+                btn.dataset.time = slot.id;
+                btn.dataset.remaining = remaining;
+                btn.onclick = () => selectTime(btn);
+                btn.innerHTML = `
+                    <span class="slot-time">${slot.label}</span>
+                    <span class="slot-period">${slot.timeRange || slot.time || ''}</span>
+                    <span class="slot-status ${statusClass}">${statusText}</span>
+                    <span class="slot-remaining">剩余 ${remaining.toLocaleString()} 张</span>
+                `;
+                if (remaining <= 0) btn.disabled = true;
+                container.appendChild(btn);
+            });
+            return;
+        }
+    }
+
+    // 本地模式：使用默认时段
+    const config = typeof SCENIC_SPOTS !== 'undefined' ? SCENIC_SPOTS[selectedSpotId] : null;
+    const slots = config ? config.timeSlots : [
+        { id: 'morning', label: '上午场', time: '08:30-12:00' },
+        { id: 'afternoon', label: '下午场', time: '13:00-17:00' }
+    ];
+
+    container.innerHTML = '';
+    slots.forEach(slot => {
+        const remaining = Math.floor(Math.random() * 50000) + 1000;
+        const total = config ? config.maxDailyCapacity / 2 : 40000;
+        const ratio = remaining / total;
+
+        let statusClass = '';
+        let statusText = '';
+        if (ratio < 0.05) {
+            statusClass = 'scarce';
+            statusText = '即将售罄';
+        } else if (ratio < 0.2) {
+            statusClass = 'warn';
+            statusText = '余票紧张';
+        } else {
+            statusText = '余票充足';
+        }
+
+        const btn = document.createElement('button');
+        btn.className = `time-slot-btn ${statusClass}`;
+        btn.dataset.time = slot.id;
+        btn.dataset.remaining = remaining;
+        btn.onclick = () => selectTime(btn);
+        btn.innerHTML = `
+            <span class="slot-time">${slot.label}</span>
+            <span class="slot-period">${slot.time}</span>
+            <span class="slot-status ${statusClass}">${statusText}</span>
+            <span class="slot-remaining">剩余 ${remaining.toLocaleString()} 张</span>
+        `;
+        container.appendChild(btn);
+    });
 }
 
 // ========================================
 // 时段选择
 // ========================================
 function selectTime(btn) {
+    if (btn.disabled) {
+        showMessage('该时段已售罄', 'error');
+        return;
+    }
     document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedTime = btn.dataset.time;
 
-    document.getElementById('display-time').textContent = selectedTime + ':00';
+    const config = typeof SCENIC_SPOTS !== 'undefined' ? SCENIC_SPOTS[selectedSpotId] : null;
+    const slot = config ? config.timeSlots.find(s => s.id === selectedTime) : null;
+    document.getElementById('display-time').textContent = slot ? slot.label : selectedTime;
 
     updateBookingPage();
 }
@@ -488,51 +740,71 @@ function bookingAction() {
 // ========================================
 // 提交预约
 // ========================================
-function submitBooking() {
-    // 30%概率进入排队
+async function submitBooking() {
+    showMessage('系统响应中...', 'warning');
+
+    // 尝试通过API提交
+    if (typeof API !== 'undefined') {
+        const config = typeof SCENIC_SPOTS !== 'undefined' ? SCENIC_SPOTS[selectedSpotId] : null;
+        const result = await API.createBooking({
+            phone: currentUser ? currentUser.phone : '',
+            spotId: selectedSpotId,
+            date: selectedDate,
+            timeSlot: selectedTime,
+            tickets: { ...ticketCounts },
+            visitorName: selectedIdentity ? selectedIdentity.name : '游客',
+            visitorId: selectedIdentity ? selectedIdentity.id : ''
+        });
+
+        if (result.inQueue) {
+            // 进入排队
+            bookingState = 'queue';
+            queuePosition = result.queuePosition;
+            Storage.saveQueueState({ queuePosition, spotId: selectedSpotId });
+            updateBookingPage();
+            startQueueCountdown();
+            if (typeof startSocialFeed === 'function') startSocialFeed();
+            return;
+        }
+
+        if (result.lottery) {
+            showLotterySheet();
+            return;
+        }
+
+        if (result.success) {
+            currentBookingId = result.bookingId;
+            if (result.booking) Storage.saveBooking(result.booking);
+            showPaymentSheet();
+            return;
+        }
+
+        // API返回错误
+        showMessage(result.error || '系统繁忙，请稍后重试', 'error');
+        return;
+    }
+
+    // 本地模式：使用原来的随机逻辑
     if (Math.random() < 0.3 && bookingState !== 'queue') {
         bookingState = 'queue';
         updateBookingPage();
         startQueueCountdown();
-        if (typeof startSocialFeed === 'function') {
-            startSocialFeed();
-        }
+        if (typeof startSocialFeed === 'function') startSocialFeed();
         return;
     }
 
-    // 40%概率弹出协议
-    if (Math.random() < 0.4) {
-        showAgreementSheet();
-        return;
-    }
-
-    // 30%概率进入抽签
     if (Math.random() < 0.3) {
         showLotterySheet();
         return;
     }
 
-    // 模拟系统卡顿
-    showMessage('系统响应中...', 'warning');
-
     setTimeout(() => {
-        // 各种随机失败
-        const failRate = 0.3;
-        if (Math.random() < failRate) {
-            const errors = [
-                '该日期/时段已约满',
-                '库存不足，请选择其他日期',
-                '系统检测到异常，请重新操作',
-                '票已售罄',
-                '网络拥堵，请稍后重试'
-            ];
+        if (Math.random() < 0.3) {
+            const errors = ['该日期/时段已约满', '库存不足，请选择其他日期', '票已售罄', '网络拥堵，请稍后重试'];
             showMessage(errors[Math.floor(Math.random() * errors.length)], 'error');
             return;
         }
-
-        // 进入支付
         showPaymentSheet();
-
     }, 1500 + Math.random() * 2000);
 }
 
@@ -540,37 +812,70 @@ function submitBooking() {
 // 排队系统
 // ========================================
 function startQueueCountdown() {
-    queuePosition = 2847;
+    // 立即更新显示
+    document.getElementById('queue-count').textContent = queuePosition;
+    document.getElementById('queue-time').textContent = `约${Math.ceil(queuePosition / 100)}分钟`;
 
-    queueInterval = setInterval(() => {
-        const decrease = Math.floor(Math.random() * 5) + 1;
-        queuePosition = Math.max(0, queuePosition - decrease);
+    queueInterval = setInterval(async () => {
+        // 尝试通过API获取排队状态
+        if (typeof API !== 'undefined' && currentUser) {
+            const result = await API.getQueueStatus(currentUser.phone);
+            if (result && result.position !== undefined) {
+                queuePosition = result.position;
 
+                if (result.completed) {
+                    clearInterval(queueInterval);
+                    bookingState = 'entry';
+                    Storage.clearQueueState();
+                    showMessage('排队成功！', 'success');
+                    updateBookingPage();
+                    return;
+                }
+
+                if (result.timeout) {
+                    clearInterval(queueInterval);
+                    bookingState = 'entry';
+                    Storage.clearQueueState();
+                    showMessage('排队超时，请重新预约', 'error');
+                    updateBookingPage();
+                    return;
+                }
+            }
+        } else {
+            // 本地模式：随机递减
+            const decrease = Math.floor(Math.random() * 5) + 1;
+            queuePosition = Math.max(0, queuePosition - decrease);
+
+            if (queuePosition < 50 && Math.random() < 0.3) {
+                clearInterval(queueInterval);
+                bookingState = 'entry';
+                Storage.clearQueueState();
+                showMessage('排队成功！', 'success');
+                updateBookingPage();
+                return;
+            }
+
+            if (Math.random() < 0.02) {
+                clearInterval(queueInterval);
+                bookingState = 'entry';
+                Storage.clearQueueState();
+                showMessage('排队超时，请重新预约', 'error');
+                updateBookingPage();
+                return;
+            }
+        }
+
+        // 更新显示
         document.getElementById('queue-count').textContent = queuePosition;
         document.getElementById('queue-time').textContent = `约${Math.ceil(queuePosition / 100)}分钟`;
-
-        // 排队到低时随机通过
-        if (queuePosition < 50 && Math.random() < 0.3) {
-            clearInterval(queueInterval);
-            bookingState = 'entry';
-            showMessage('排队成功！', 'success');
-            updateBookingPage();
-        }
-
-        // 2%概率排队异常
-        if (Math.random() < 0.02) {
-            clearInterval(queueInterval);
-            bookingState = 'entry';
-            const errors = ['排队超时', '网络异常，排队已结束'];
-            showMessage(errors[Math.floor(Math.random() * errors.length)], 'error');
-            updateBookingPage();
-        }
-    }, 2000);
+        Storage.saveQueueState({ queuePosition, spotId: selectedSpotId });
+    }, 3000);
 }
 
 function giveUpQueue() {
     clearInterval(queueInterval);
     bookingState = 'entry';
+    Storage.clearQueueState();
     showMessage('已退出排队', 'warning');
     updateBookingPage();
 }
@@ -789,7 +1094,7 @@ function startPaymentCountdown() {
     window._paymentTimer = timer;
 }
 
-function confirmPayment() {
+async function confirmPayment() {
     clearInterval(window._paymentTimer);
 
     const sheet = document.getElementById('payment-sheet');
@@ -800,66 +1105,73 @@ function confirmPayment() {
         </div>
     `;
 
-    // 3-6秒后出结果
-    setTimeout(() => {
-        const result = Math.random();
+    // 尝试通过API确认支付
+    let paymentResult = null;
+    if (typeof API !== 'undefined' && currentBookingId) {
+        paymentResult = await API.confirmPayment(currentBookingId, selectedPaymentMethod);
+    }
 
-        if (result < 0.3) {
-            // 支付成功但出票失败
-            sheet.querySelector('.sheet-body').innerHTML = `
-                <div class="payment-processing">
-                    <div style="font-size:48px;margin-bottom:12px;">⚠️</div>
-                    <p style="color:var(--wechat-danger);font-weight:600;">支付成功但出票失败</p>
-                    <p style="color:var(--wechat-text-secondary);font-size:13px;margin-top:8px;">系统将在24小时内自动退款</p>
-                    <button class="btn-primary btn-block" style="margin-top:16px;" onclick="closePaymentSheet()">知道了</button>
-                </div>
-            `;
-
-            if (typeof unlockAchievement === 'function') {
-                unlockAchievement('payment_fail');
-            }
-        } else if (result < 0.5) {
-            // 东洋币余额不足
-            if (selectedPaymentMethod === 'dongyang') {
-                sheet.querySelector('.sheet-body').innerHTML = `
-                    <div class="payment-processing">
-                        <div style="font-size:48px;margin-bottom:12px;">😅</div>
-                        <p style="color:var(--wechat-danger);font-weight:600;">东洋币余额不足</p>
-                        <p style="color:var(--wechat-text-secondary);font-size:13px;margin-top:8px;">您的东洋币余额：0.00</p>
-                        <button class="btn-primary btn-block" style="margin-top:16px;" onclick="closePaymentSheet()">换种支付方式</button>
-                    </div>
-                `;
-            } else {
-                // 银行风控
-                sheet.querySelector('.sheet-body').innerHTML = `
-                    <div class="payment-processing">
-                        <div style="font-size:48px;margin-bottom:12px;">🏦</div>
-                        <p style="color:var(--wechat-danger);font-weight:600;">银行风控拦截</p>
-                        <p style="color:var(--wechat-text-secondary);font-size:13px;margin-top:8px;">交易被银行安全系统拦截，请联系发卡行</p>
-                        <button class="btn-primary btn-block" style="margin-top:16px;" onclick="closePaymentSheet()">知道了</button>
-                    </div>
-                `;
-            }
-
-            if (typeof unlockAchievement === 'function') {
-                unlockAchievement('payment_block');
-            }
+    // 本地模式：使用随机结果
+    if (!paymentResult) {
+        await new Promise(r => setTimeout(r, 2000 + Math.random() * 3000));
+        const rand = Math.random();
+        if (rand < 0.2) {
+            paymentResult = { success: false, error: 'payment_fail', message: '支付成功但出票失败' };
+        } else if (rand < 0.35) {
+            paymentResult = { success: false, error: 'payment_block', message: selectedPaymentMethod === 'dongyang' ? '东洋币余额不足' : '银行风控拦截' };
         } else {
-            // 支付成功
-            sheet.querySelector('.sheet-body').innerHTML = `
-                <div class="payment-processing">
-                    <div style="font-size:48px;margin-bottom:12px;">✅</div>
-                    <p style="color:var(--wechat-green);font-weight:600;">支付成功</p>
-                    <p style="color:var(--wechat-text-secondary);font-size:13px;margin-top:8px;">正在生成订单...</p>
-                </div>
-            `;
-
-            setTimeout(() => {
-                closePaymentSheet();
-                showSuccessPage();
-            }, 1500);
+            paymentResult = { success: true };
         }
-    }, 2000 + Math.random() * 3000);
+    }
+
+    if (!paymentResult.success) {
+        const errorType = paymentResult.error;
+        let icon = '⚠️';
+        let title = paymentResult.message || '支付失败';
+        let hint = '系统将在24小时内自动退款';
+
+        if (errorType === 'payment_block') {
+            icon = '🏦';
+            hint = selectedPaymentMethod === 'dongyang' ? '您的东洋币余额：0.00' : '交易被银行安全系统拦截，请联系发卡行';
+        }
+
+        sheet.querySelector('.sheet-body').innerHTML = `
+            <div class="payment-processing">
+                <div style="font-size:48px;margin-bottom:12px;">${icon}</div>
+                <p style="color:var(--wechat-danger);font-weight:600;">${title}</p>
+                <p style="color:var(--wechat-text-secondary);font-size:13px;margin-top:8px;">${hint}</p>
+                <button class="btn-primary btn-block" style="margin-top:16px;" onclick="closePaymentSheet()">知道了</button>
+            </div>
+        `;
+
+        if (errorType === 'payment_fail' && typeof unlockAchievement === 'function') unlockAchievement('payment_fail');
+        if (errorType === 'payment_block' && typeof unlockAchievement === 'function') unlockAchievement('payment_block');
+        return;
+    }
+
+    // 支付成功
+    sheet.querySelector('.sheet-body').innerHTML = `
+        <div class="payment-processing">
+            <div style="font-size:48px;margin-bottom:12px;">✅</div>
+            <p style="color:var(--wechat-green);font-weight:600;">支付成功</p>
+            <p style="color:var(--wechat-text-secondary);font-size:13px;margin-top:8px;">正在生成订单...</p>
+        </div>
+    `;
+
+    // 更新预约记录状态
+    if (currentBookingId) {
+        const bookings = Storage.getBookings();
+        const booking = bookings.find(b => b.id === currentBookingId);
+        if (booking) {
+            booking.status = 'confirmed';
+            Storage.saveBooking(booking);
+        }
+    }
+
+    setTimeout(() => {
+        closePaymentSheet();
+        showSuccessPage();
+    }, 1500);
 }
 
 // ========================================
@@ -870,10 +1182,14 @@ function showSuccessPage() {
                   ticketCounts.child * ticketPrices.child +
                   ticketCounts.senior * ticketPrices.senior;
 
+    const config = typeof SCENIC_SPOTS !== 'undefined' ? SCENIC_SPOTS[selectedSpotId] : null;
+    const spotName = config ? config.alias || config.name : '东洋秘境';
+
     const detailsEl = document.getElementById('success-details');
     detailsEl.innerHTML = `
+        <div class="detail-row"><span>景点</span><span>${spotName}</span></div>
         <div class="detail-row"><span>预约日期</span><span>${selectedDate}</span></div>
-        <div class="detail-row"><span>游览时段</span><span>${selectedTime}:00-${parseInt(selectedTime)+2}:00</span></div>
+        <div class="detail-row"><span>游览时段</span><span>${selectedTime === 'morning' ? '上午场' : '下午场'}</span></div>
         <div class="detail-row"><span>票种</span><span>
             ${ticketCounts.adult > 0 ? `成人${ticketCounts.adult}张 ` : ''}
             ${ticketCounts.child > 0 ? `儿童${ticketCounts.child}张 ` : ''}
@@ -881,15 +1197,22 @@ function showSuccessPage() {
         </span></div>
         <div class="detail-row"><span>合计金额</span><span style="color:var(--wechat-danger)">¥${total}</span></div>
         <div class="detail-row"><span>游客</span><span>${selectedIdentity ? selectedIdentity.name : '游客'}</span></div>
+        <div class="detail-row"><span>订单号</span><span>${currentBookingId || 'BK' + Date.now()}</span></div>
     `;
+
+    // 生成揭露数据
+    const realRemaining = Math.floor(Math.random() * 50000) + 10000;
+    const fakeSoldOut = Math.floor(Math.random() * 200) + 50;
+    const captchaFail = Math.floor(Math.random() * 30) + 60;
+    const lagCount = Math.floor(Math.random() * 30) + 10;
 
     const statsEl = document.getElementById('reveal-stats');
     statsEl.innerHTML = `
-        <div class="reveal-stat"><span class="label">实际余票</span><span class="value">2,847张</span></div>
-        <div class="reveal-stat"><span class="label">"已售罄"次数</span><span class="value">156次</span></div>
-        <div class="reveal-stat"><span class="label">验证码失败率</span><span class="value">78%</span></div>
-        <div class="reveal-stat"><span class="label">系统"卡顿"次数</span><span class="value">23次</span></div>
-        <div class="reveal-stat"><span class="label">虚假排队人数</span><span class="value">2,847人（实际0人）</span></div>
+        <div class="reveal-stat"><span class="label">实际余票</span><span class="value">${realRemaining.toLocaleString()}张</span></div>
+        <div class="reveal-stat"><span class="label">"已售罄"次数</span><span class="value">${fakeSoldOut}次</span></div>
+        <div class="reveal-stat"><span class="label">验证码失败率</span><span class="value">${captchaFail}%</span></div>
+        <div class="reveal-stat"><span class="label">系统"卡顿"次数</span><span class="value">${lagCount}次</span></div>
+        <div class="reveal-stat"><span class="label">虚假排队人数</span><span class="value">${queuePosition.toLocaleString()}人（实际0人）</span></div>
     `;
 
     document.getElementById('success-sheet').classList.add('show');
@@ -930,6 +1253,13 @@ function updateProfilePage() {
     if (badge && typeof getUnlockedCount === 'function') {
         badge.textContent = getUnlockedCount();
     }
+
+    // 更新预约记录数量
+    const bookings = Storage.getBookings();
+    const bookingCountEl = document.querySelector('.menu-item:nth-child(2) .menu-extra');
+    if (bookingCountEl) {
+        bookingCountEl.textContent = bookings.length;
+    }
 }
 
 function showAchievements() {
@@ -941,6 +1271,61 @@ function showAchievements() {
 
 function closeAchievementSheet() {
     document.getElementById('achievement-sheet').classList.remove('show');
+}
+
+// 显示预约记录
+function showBookingHistory() {
+    const bookings = Storage.getBookings();
+    const sheet = document.getElementById('booking-history-sheet');
+    const list = document.getElementById('booking-history-list');
+
+    if (!list) return;
+
+    if (bookings.length === 0) {
+        list.innerHTML = '<div class="empty-history"><p>暂无预约记录</p></div>';
+    } else {
+        list.innerHTML = bookings.map(b => {
+            const statusMap = {
+                'pending_payment': { text: '待支付', class: 'pending' },
+                'confirmed': { text: '已确认', class: 'confirmed' },
+                'cancelled': { text: '已取消', class: 'cancelled' },
+                'expired': { text: '已过期', class: 'expired' }
+            };
+            const status = statusMap[b.status] || { text: b.status, class: '' };
+            const config = typeof SCENIC_SPOTS !== 'undefined' ? SCENIC_SPOTS[b.spotId] : null;
+            const spotName = config ? config.alias || config.name : b.spotName || '未知景点';
+
+            return `
+                <div class="booking-history-item">
+                    <div class="history-header">
+                        <span class="history-spot">${spotName}</span>
+                        <span class="history-status ${status.class}">${status.text}</span>
+                    </div>
+                    <div class="history-details">
+                        <span>${b.date} ${b.timeSlot === 'morning' ? '上午场' : '下午场'}</span>
+                        <span>¥${b.totalAmount || 0}</span>
+                    </div>
+                    <div class="history-id">订单号：${b.id}</div>
+                    ${b.status === 'pending_payment' ? `<button class="btn-outline btn-sm" onclick="cancelBookingFromHistory('${b.id}')">取消订单</button>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    sheet.classList.add('show');
+}
+
+function closeBookingHistorySheet() {
+    document.getElementById('booking-history-sheet').classList.remove('show');
+}
+
+async function cancelBookingFromHistory(bookingId) {
+    if (typeof API !== 'undefined' && currentUser) {
+        await API.cancelBooking(bookingId, currentUser.phone);
+    }
+    Storage.cancelBooking(bookingId);
+    showMessage('订单已取消', 'success');
+    showBookingHistory(); // 刷新列表
 }
 
 // ========================================

@@ -1175,3 +1175,138 @@
     font-size: 13px;
     color: var(--wechat-text-secondary);
 }
+
+/* ========================================
+   预约记录
+   ======================================== */
+.booking-history-list {
+    padding: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.booking-history-item {
+    background: var(--wechat-white);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--wechat-border);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.history-spot {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.history-status {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.history-status.pending {
+    background: #FFF3E0;
+    color: #F57C00;
+}
+
+.history-status.confirmed {
+    background: #E8F5E9;
+    color: #07C160;
+}
+
+.history-status.cancelled {
+    background: #F5F5F5;
+    color: #999;
+}
+
+.history-status.expired {
+    background: #FFEBEE;
+    color: #E53935;
+}
+
+.history-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--wechat-text-secondary);
+    margin-bottom: 8px;
+}
+
+.history-id {
+    font-size: 12px;
+    color: var(--wechat-text-secondary);
+    margin-bottom: 8px;
+}
+
+.empty-history {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--wechat-text-secondary);
+}
+
+.btn-sm {
+    font-size: 13px;
+    padding: 6px 16px;
+}
+
+/* ========================================
+   时段选择（增强版）
+   ======================================== */
+.time-slot-btn {
+    position: relative;
+}
+
+.slot-period {
+    font-size: 11px;
+    color: var(--wechat-text-secondary);
+    display: block;
+}
+
+.slot-remaining {
+    font-size: 11px;
+    color: var(--wechat-text-secondary);
+    display: block;
+    margin-top: 4px;
+}
+
+.time-slot-btn.scarce .slot-status,
+.time-slot-btn.scarce .slot-remaining {
+    color: var(--wechat-danger);
+}
+
+.time-slot-btn.warn .slot-status {
+    color: #F57C00;
+}
+
+.time-slot-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   景点卡片状态
+   ======================================== */
+.scenic-status.closed {
+    background: #F5F5F5;
+    color: #999;
+}
+
+.scenic-status.scarce {
+    background: #FFF3E0;
+    color: #F57C00;
+}
+
+/* ========================================
+   Footer信息
+   ======================================== */
+.footer-info {
+    color: var(--wechat-text-secondary);
+    font-size: 12px;
+}

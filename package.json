@@ -1,0 +1,13 @@
+{
+  "name": "yunyou-dongyang-reservation",
+  "version": "2.0.0",
+  "description": "云游东洋 - 智慧景区预约系统（讽刺性互动体验）",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Static site, no build needed'"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "license": "MIT"
+}
