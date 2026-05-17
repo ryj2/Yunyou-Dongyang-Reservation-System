@@ -30,6 +30,7 @@ const SPOTS = {
 // 放票时间（服务器启动后1分钟）
 const RELEASE_DELAY = 60000;
 let releaseTime = Date.now() + RELEASE_DELAY;
+let releaseRound = 0;
 
 function getReleaseTime() {
   return releaseTime;
@@ -39,39 +40,52 @@ function getCountdown() {
   return Math.max(0, Math.floor((releaseTime - Date.now()) / 1000));
 }
 
+function nextReleaseRound() {
+  releaseRound++;
+  releaseTime = Date.now() + RELEASE_DELAY;
+  return releaseTime;
+}
+
 // 初始化库存
 function initInventory(spotId, date) {
   if (!inventory[spotId]) inventory[spotId] = {};
-  if (!inventory[spotId][date]) {
-    const spot = SPOTS[spotId];
-    const capPerSlot = spot ? spot.maxDaily / 2 : 40000;
-    // 放票时间未到：全部显示已售罄
+  const spot = SPOTS[spotId];
+  const capPerSlot = spot ? spot.maxDaily / 2 : 40000;
+
+  const cached = inventory[spotId][date];
+
+  // 新轮次或首次：根据当前放票状态初始化
+  if (!cached || cached._round !== releaseRound) {
     if (Date.now() < releaseTime) {
       inventory[spotId][date] = {
         morning: { total: capPerSlot, remaining: 0 },
         afternoon: { total: capPerSlot, remaining: 0 },
-        _releaseInit: false
+        _releaseInit: false,
+        _round: releaseRound
       };
     } else {
-      // 随机预消耗 30%-80%
       const consumed = Math.floor(capPerSlot * (0.3 + Math.random() * 0.5));
       inventory[spotId][date] = {
         morning: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.6) },
         afternoon: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.4) },
-        _releaseInit: true
+        _releaseInit: true,
+        _round: releaseRound
       };
     }
-  } else if (Date.now() >= releaseTime && inventory[spotId][date]._releaseInit === false) {
-    // 放票前初始化过缓存 → 放票时间到了，重新初始化真实库存
-    const spot = SPOTS[spotId];
-    const capPerSlot = spot ? spot.maxDaily / 2 : 40000;
+    return inventory[spotId][date];
+  }
+
+  // 同一轮次：放票前初始化的缓存 → 放票时间到了，更新为真实库存
+  if (Date.now() >= releaseTime && cached._releaseInit === false) {
     const consumed = Math.floor(capPerSlot * (0.3 + Math.random() * 0.5));
     inventory[spotId][date] = {
       morning: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.6) },
       afternoon: { total: capPerSlot, remaining: capPerSlot - Math.floor(consumed * 0.4) },
-      _releaseInit: true
+      _releaseInit: true,
+      _round: releaseRound
     };
   }
+
   return inventory[spotId][date];
 }
 
@@ -111,4 +125,4 @@ function updateConcurrent() {
 updateConcurrent();
 setInterval(updateConcurrent, 5000);
 
-export { inventory, users, bookings, queue, concurrentUsers, SPOTS, initInventory, getDateStr, getNext7Days, generateCode, generateBookingId, getReleaseTime, getCountdown };
+export { inventory, users, bookings, queue, concurrentUsers, SPOTS, initInventory, getDateStr, getNext7Days, generateCode, generateBookingId, getReleaseTime, getCountdown, nextReleaseRound };

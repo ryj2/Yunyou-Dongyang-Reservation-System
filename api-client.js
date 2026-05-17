@@ -66,5 +66,10 @@ const API = {
       bookingId,
       paymentMethod
     });
+  },
+
+  // 进入下一轮放票
+  async nextRound() {
+    return this.request('POST', '/next-round');
   }
 };

@@ -43,6 +43,7 @@ let phoneDropdownOpen = false;
 const RELEASE_TIME_KEY = 'dongyang_release_time';
 let releaseTime = 0;
 let releaseTimer = null;
+let bookingPhaseTimer = null;
 
 function initReleaseTime() {
     const saved = localStorage.getItem(RELEASE_TIME_KEY);
@@ -86,6 +87,7 @@ function startReleaseCountdown() {
             currentSpotsData = null;
             loadScenicSpots();
             showMessage('系统已放票，请尽快预约', 'success');
+            startBookingPhase();
         }
     }, 1000);
 }
@@ -99,6 +101,39 @@ function stopReleaseCountdown() {
     if (banner) banner.style.display = 'none';
     localStorage.removeItem(RELEASE_TIME_KEY);
     releaseTime = 0;
+}
+
+function startBookingPhase() {
+    stopBookingPhase();
+    bookingPhaseTimer = setTimeout(() => {
+        bookingPhaseTimer = null;
+        showMessage('本轮未完成预约，自动进入下一轮', 'warning');
+        startNextRound();
+    }, 30000);
+}
+
+function stopBookingPhase() {
+    if (bookingPhaseTimer) {
+        clearTimeout(bookingPhaseTimer);
+        bookingPhaseTimer = null;
+    }
+}
+
+function startNextRound() {
+    stopReleaseCountdown();
+    stopBookingPhase();
+    localStorage.removeItem(RELEASE_TIME_KEY);
+    releaseTime = Date.now() + 60000;
+    localStorage.setItem(RELEASE_TIME_KEY, releaseTime.toString());
+    currentSpotsData = null;
+    // 通知服务端进入下一轮
+    if (typeof API !== 'undefined') {
+        API.nextRound().catch(() => {});
+    }
+    showMessage('即将开启新一轮放票', 'warning');
+    setTimeout(() => {
+        loadScenicSpots();
+    }, 500);
 }
 
 // ========================================
@@ -859,6 +894,7 @@ async function submitBooking() {
 
         if (result.inQueue) {
             // 进入排队
+            stopBookingPhase();
             bookingState = 'queue';
             queuePosition = result.queuePosition;
             Storage.saveQueueState({ queuePosition, spotId: selectedSpotId });
@@ -869,11 +905,13 @@ async function submitBooking() {
         }
 
         if (result.lottery) {
+            stopBookingPhase();
             showLotterySheet();
             return;
         }
 
         if (result.success) {
+            stopBookingPhase();
             currentBookingId = result.bookingId;
             if (result.booking) Storage.saveBooking(result.booking);
             showPaymentSheet();
@@ -882,11 +920,13 @@ async function submitBooking() {
 
         // API返回错误
         showMessage(result.error || '系统繁忙，请稍后重试', 'error');
+        setTimeout(startNextRound, 3000);
         return;
     }
 
     // 本地模式：使用原来的随机逻辑
     if (Math.random() < 0.3 && bookingState !== 'queue') {
+        stopBookingPhase();
         bookingState = 'queue';
         updateBookingPage();
         startQueueCountdown();
@@ -895,6 +935,7 @@ async function submitBooking() {
     }
 
     if (Math.random() < 0.3) {
+        stopBookingPhase();
         showLotterySheet();
         return;
     }
@@ -903,8 +944,10 @@ async function submitBooking() {
         if (Math.random() < 0.3) {
             const errors = ['该日期/时段已约满', '库存不足，请选择其他日期', '票已售罄', '网络拥堵，请稍后重试'];
             showMessage(errors[Math.floor(Math.random() * errors.length)], 'error');
+            setTimeout(startNextRound, 3000);
             return;
         }
+        stopBookingPhase();
         showPaymentSheet();
     }, 1500 + Math.random() * 2000);
 }
@@ -937,8 +980,9 @@ function startQueueCountdown() {
                     clearInterval(queueInterval);
                     bookingState = 'entry';
                     Storage.clearQueueState();
-                    showMessage('排队超时，请重新预约', 'error');
+                    showMessage('排队超时，即将进入下一轮放票', 'error');
                     updateBookingPage();
+                    setTimeout(startNextRound, 3000);
                     return;
                 }
             }
@@ -960,8 +1004,9 @@ function startQueueCountdown() {
                 clearInterval(queueInterval);
                 bookingState = 'entry';
                 Storage.clearQueueState();
-                showMessage('排队超时，请重新预约', 'error');
+                showMessage('排队超时，即将进入下一轮放票', 'error');
                 updateBookingPage();
+                setTimeout(startNextRound, 3000);
                 return;
             }
         }
@@ -1107,10 +1152,14 @@ function showLotteryResult() {
                     <p><span>中签范围</span><span>1-50</span></p>
                     <p><span>中签率</span><span style="color:var(--wechat-danger)">0.17%</span></p>
                 </div>
-                <div class="lottery-result-tips">明日上午9:00将开启新一轮抽签</div>
+                <div class="lottery-result-tips">点击下方按钮进入下一轮放票</div>
             </div>
         `;
-        document.getElementById('start-lottery-btn').textContent = '关闭';
+        document.getElementById('start-lottery-btn').textContent = '进入下一轮放票';
+        document.getElementById('start-lottery-btn').onclick = () => {
+            closeLotterySheet();
+            startNextRound();
+        };
 
         // 触发成就
         if (typeof unlockAchievement === 'function') {
@@ -1136,6 +1185,7 @@ function showLotteryResult() {
             // 60%概率中签后还是失败
             if (Math.random() < 0.6) {
                 showMessage('中签资格已失效', 'error');
+                setTimeout(startNextRound, 3000);
                 return;
             }
         };
@@ -1187,7 +1237,8 @@ function startPaymentCountdown() {
         if (timeLeft < 0) {
             clearInterval(timer);
             closePaymentSheet();
-            showMessage('支付超时，订单已取消', 'error');
+            showMessage('支付超时，订单已取消，即将进入下一轮放票', 'error');
+            setTimeout(startNextRound, 3000);
         }
     }, 1000);
 
@@ -1241,7 +1292,7 @@ async function confirmPayment() {
                 <div style="font-size:48px;margin-bottom:12px;">${icon}</div>
                 <p style="color:var(--wechat-danger);font-weight:600;">${title}</p>
                 <p style="color:var(--wechat-text-secondary);font-size:13px;margin-top:8px;">${hint}</p>
-                <button class="btn-primary btn-block" style="margin-top:16px;" onclick="closePaymentSheet()">知道了</button>
+                <button class="btn-primary btn-block" style="margin-top:16px;" onclick="closePaymentSheet();setTimeout(startNextRound,1000)">进入下一轮放票</button>
             </div>
         `;
 
