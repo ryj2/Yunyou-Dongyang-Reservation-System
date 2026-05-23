@@ -55,8 +55,12 @@ const API = {
   },
 
   // 查询排队状态
-  async getQueueStatus(phone) {
-    return this.request('GET', `/queue-status?phone=${encodeURIComponent(phone)}`);
+  async getQueueStatus({ phone, queueId } = {}) {
+    const params = new URLSearchParams();
+    if (phone) params.set('phone', phone);
+    if (queueId) params.set('queueId', queueId);
+    const query = params.toString();
+    return this.request('GET', `/queue-status${query ? `?${query}` : ''}`);
   },
 
   // 确认支付

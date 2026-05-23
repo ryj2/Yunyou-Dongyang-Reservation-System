@@ -16,21 +16,30 @@ export const handler = async (event) => {
   try {
     const params = new URLSearchParams(event.queryStringParameters || {});
     const phone = params.get('phone');
+    const queueId = params.get('queueId');
 
-    if (!phone) {
-      return resp(400, { error: '缺少手机号' });
+    if (!phone && !queueId) {
+      return resp(400, { error: '缺少排队标识' });
     }
 
     // 模拟延迟
     await delay(100 + Math.random() * 300);
 
     // 查找排队记录
-    const idx = queue.findIndex(q => q.phone === phone);
+    const idx = queue.findIndex(q => {
+      if (queueId) return q.id === queueId;
+      return q.phone === phone;
+    });
     if (idx === -1) {
       return resp(200, { position: 0, completed: true });
     }
 
     const entry = queue[idx];
+
+    if (phone && entry.phone !== phone) {
+      return resp(403, { error: '排队信息不匹配' });
+    }
+
     const elapsed = Date.now() - entry.timestamp;
 
     // 基于时间计算位置递减

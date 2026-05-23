@@ -116,6 +116,11 @@ function generateBookingId() {
   return 'BK' + Date.now() + Math.floor(Math.random() * 1000);
 }
 
+// 生成排队票据ID
+function generateQueueId() {
+  return 'Q' + Date.now() + Math.floor(Math.random() * 1000);
+}
+
 // 更新并发数
 function updateConcurrent() {
   concurrentUsers = Math.max(100, concurrentUsers + Math.floor(Math.random() * 200) - 100);
@@ -125,4 +130,4 @@ function updateConcurrent() {
 updateConcurrent();
 setInterval(updateConcurrent, 5000);
 
-export { inventory, users, bookings, queue, concurrentUsers, SPOTS, initInventory, getDateStr, getNext7Days, generateCode, generateBookingId, getReleaseTime, getCountdown, nextReleaseRound };
+export { inventory, users, bookings, queue, concurrentUsers, SPOTS, initInventory, getDateStr, getNext7Days, generateCode, generateBookingId, generateQueueId, getReleaseTime, getCountdown, nextReleaseRound };

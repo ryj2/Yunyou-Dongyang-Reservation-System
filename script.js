@@ -14,6 +14,7 @@ let selectedIdentity = null;
 let selectedPaymentMethod = 'wechat';
 let queueInterval = null;
 let queuePosition = 0;
+let currentQueueId = null;
 let toastTimer = null;
 let bookingState = 'entry'; // entry, date, time, ticket, identity, queue
 let currentBookingId = null;
@@ -85,7 +86,7 @@ function startReleaseCountdown() {
             localStorage.removeItem(RELEASE_TIME_KEY);
             releaseTime = 0;
             showMessage('系统已放票，请尽快预约', 'success');
-            forceLoadAvailableTickets();
+            loadScenicSpots();
             startBookingPhase();
         }
     }, 1000);
@@ -223,13 +224,23 @@ function stopBookingPhase() {
 function startNextRound() {
     stopReleaseCountdown();
     stopBookingPhase();
+    clearInterval(queueInterval);
+    queueInterval = null;
     localStorage.removeItem(RELEASE_TIME_KEY);
     releaseTime = Date.now() + 60000;
     localStorage.setItem(RELEASE_TIME_KEY, releaseTime.toString());
     currentSpotsData = null;
+    currentQueueId = null;
+    queuePosition = 0;
+    Storage.clearQueueState();
     // 通知服务端进入下一轮
     if (typeof API !== 'undefined') {
-        API.nextRound().catch(() => {});
+        API.nextRound().then(result => {
+            if (result && result.releaseTime) {
+                releaseTime = result.releaseTime;
+                localStorage.setItem(RELEASE_TIME_KEY, releaseTime.toString());
+            }
+        }).catch(() => {});
     }
     showMessage('即将开启新一轮放票', 'warning');
     setTimeout(() => {
@@ -331,6 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (savedQueue && isLoggedIn) {
         bookingState = 'queue';
         queuePosition = savedQueue.queuePosition || 0;
+        currentQueueId = savedQueue.queueId || null;
         selectedSpotId = savedQueue.spotId || 'gugong';
     }
 
@@ -998,8 +1010,9 @@ async function submitBooking() {
             // 进入排队
             stopBookingPhase();
             bookingState = 'queue';
+            currentQueueId = result.queueId || null;
             queuePosition = result.queuePosition;
-            Storage.saveQueueState({ queuePosition, spotId: selectedSpotId });
+            Storage.saveQueueState({ queueId: currentQueueId, queuePosition, spotId: selectedSpotId });
             updateBookingPage();
             startQueueCountdown();
             if (typeof startSocialFeed === 'function') startSocialFeed();
@@ -1058,6 +1071,8 @@ async function submitBooking() {
 // 排队系统
 // ========================================
 function startQueueCountdown() {
+    clearInterval(queueInterval);
+
     // 立即更新显示
     document.getElementById('queue-count').textContent = queuePosition;
     document.getElementById('queue-time').textContent = `约${Math.ceil(queuePosition / 100)}分钟`;
@@ -1065,13 +1080,15 @@ function startQueueCountdown() {
     queueInterval = setInterval(async () => {
         // 尝试通过API获取排队状态
         if (typeof API !== 'undefined' && currentUser) {
-            const result = await API.getQueueStatus(currentUser.phone);
+            const result = await API.getQueueStatus({ phone: currentUser.phone, queueId: currentQueueId });
             if (result && result.position !== undefined) {
                 queuePosition = result.position;
 
                 if (result.completed) {
                     clearInterval(queueInterval);
+                    queueInterval = null;
                     bookingState = 'entry';
+                    currentQueueId = null;
                     Storage.clearQueueState();
                     showMessage('排队成功！', 'success');
                     updateBookingPage();
@@ -1080,13 +1097,24 @@ function startQueueCountdown() {
 
                 if (result.timeout) {
                     clearInterval(queueInterval);
+                    queueInterval = null;
                     bookingState = 'entry';
+                    currentQueueId = null;
                     Storage.clearQueueState();
                     showMessage('排队超时，即将进入下一轮放票', 'error');
                     updateBookingPage();
                     setTimeout(startNextRound, 3000);
                     return;
                 }
+            } else if (result && result.error) {
+                clearInterval(queueInterval);
+                queueInterval = null;
+                bookingState = 'entry';
+                currentQueueId = null;
+                Storage.clearQueueState();
+                showMessage(result.error, 'error');
+                updateBookingPage();
+                return;
             }
         } else {
             // 本地模式：随机递减
@@ -1095,7 +1123,9 @@ function startQueueCountdown() {
 
             if (queuePosition < 50 && Math.random() < 0.3) {
                 clearInterval(queueInterval);
+                queueInterval = null;
                 bookingState = 'entry';
+                currentQueueId = null;
                 Storage.clearQueueState();
                 showMessage('排队成功！', 'success');
                 updateBookingPage();
@@ -1104,7 +1134,9 @@ function startQueueCountdown() {
 
             if (Math.random() < 0.02) {
                 clearInterval(queueInterval);
+                queueInterval = null;
                 bookingState = 'entry';
+                currentQueueId = null;
                 Storage.clearQueueState();
                 showMessage('排队超时，即将进入下一轮放票', 'error');
                 updateBookingPage();
@@ -1116,13 +1148,15 @@ function startQueueCountdown() {
         // 更新显示
         document.getElementById('queue-count').textContent = queuePosition;
         document.getElementById('queue-time').textContent = `约${Math.ceil(queuePosition / 100)}分钟`;
-        Storage.saveQueueState({ queuePosition, spotId: selectedSpotId });
+        Storage.saveQueueState({ queueId: currentQueueId, queuePosition, spotId: selectedSpotId });
     }, 3000);
 }
 
 function giveUpQueue() {
     clearInterval(queueInterval);
+    queueInterval = null;
     bookingState = 'entry';
+    currentQueueId = null;
     Storage.clearQueueState();
     showMessage('已退出排队', 'warning');
     updateBookingPage();
@@ -1575,7 +1609,11 @@ function closeBookingHistorySheet() {
 
 async function cancelBookingFromHistory(bookingId) {
     if (typeof API !== 'undefined' && currentUser) {
-        await API.cancelBooking(bookingId, currentUser.phone);
+        const result = await API.cancelBooking(bookingId, currentUser.phone);
+        if (!result || !result.success) {
+            showMessage((result && result.error) || '取消订单失败', 'error');
+            return;
+        }
     }
     Storage.cancelBooking(bookingId);
     showMessage('订单已取消', 'success');

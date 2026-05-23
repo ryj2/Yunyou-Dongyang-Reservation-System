@@ -2,7 +2,7 @@
 // POST /api/create-booking
 // ========================================
 
-import { SPOTS, initInventory, bookings, queue, concurrentUsers, generateBookingId } from './_shared/store.mjs';
+import { SPOTS, initInventory, bookings, queue, concurrentUsers, generateBookingId, generateQueueId } from './_shared/store.mjs';
 
 export const handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
@@ -100,11 +100,13 @@ export const handler = async (event) => {
 
     // 如果并发用户>3000，进入排队
     if (concurrentUsers > 3000) {
+      const queueId = generateQueueId();
       const position = queue.length + Math.floor(Math.random() * 500) + 100;
-      queue.push({ phone, spotId, date, timeSlot, timestamp: Date.now() });
+      queue.push({ id: queueId, phone, spotId, date, timeSlot, timestamp: Date.now() });
       return resp(200, {
         success: false,
         inQueue: true,
+        queueId,
         queuePosition: position,
         estimatedWait: `约${Math.ceil(position / 100)}分钟`
       });
