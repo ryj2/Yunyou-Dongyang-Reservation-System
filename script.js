@@ -20,6 +20,7 @@ let bookingState = 'entry'; // entry, date, time, ticket, identity, queue
 let currentBookingId = null;
 let hasAgreedSession = false; // 本次会话是否已同意过协议
 let currentSpotsData = null; // 当前景点数据
+let pendingAgreementContinuation = false;
 
 // 票价配置（从scenic-data.js动态获取）
 let ticketPrices = { adult: 60, child: 30, senior: 30 };
@@ -232,7 +233,10 @@ function startNextRound() {
     currentSpotsData = null;
     currentQueueId = null;
     queuePosition = 0;
+    currentBookingId = null;
+    pendingAgreementContinuation = false;
     Storage.clearQueueState();
+    Storage.clearPaymentState();
     // 通知服务端进入下一轮
     if (typeof API !== 'undefined') {
         API.nextRound().then(result => {
@@ -344,6 +348,11 @@ document.addEventListener('DOMContentLoaded', function() {
         queuePosition = savedQueue.queuePosition || 0;
         currentQueueId = savedQueue.queueId || null;
         selectedSpotId = savedQueue.spotId || 'gugong';
+    }
+
+    const savedPayment = Storage.getPaymentState();
+    if (savedPayment && isLoggedIn) {
+        restorePaymentState(savedPayment);
     }
 
     // 加载景点数据
@@ -814,6 +823,7 @@ function confirmDate() {
     // 本次会话首次预约时触发协议（更真实）
     if (!hasAgreedSession) {
         hasAgreedSession = true;
+        pendingAgreementContinuation = true;
         showAgreementSheet();
         return;
     }
@@ -955,6 +965,83 @@ function updateTicketTotal() {
     document.getElementById('total-price').textContent = `¥${price}`;
 }
 
+function createFallbackBooking() {
+    return {
+        id: currentBookingId || `BK${Date.now()}`,
+        phone: currentUser ? currentUser.phone : '',
+        spotId: selectedSpotId,
+        date: selectedDate,
+        timeSlot: selectedTime,
+        tickets: { ...ticketCounts },
+        visitorName: selectedIdentity ? selectedIdentity.name : '游客',
+        visitorId: selectedIdentity ? selectedIdentity.id : '',
+        status: 'pending_payment',
+        createdAt: Date.now()
+    };
+}
+
+function persistPaymentState() {
+    Storage.savePaymentState({
+        bookingId: currentBookingId,
+        selectedSpotId,
+        selectedDate,
+        selectedTime,
+        ticketCounts: { ...ticketCounts },
+        selectedIdentity,
+        selectedPaymentMethod
+    });
+}
+
+function restorePaymentState(savedPayment) {
+    if (!savedPayment || !savedPayment.bookingId) return;
+
+    currentBookingId = savedPayment.bookingId;
+    selectedSpotId = savedPayment.selectedSpotId || selectedSpotId;
+    selectedDate = savedPayment.selectedDate || selectedDate;
+    selectedTime = savedPayment.selectedTime || selectedTime;
+    ticketCounts = savedPayment.ticketCounts || ticketCounts;
+    selectedIdentity = savedPayment.selectedIdentity || selectedIdentity;
+    selectedPaymentMethod = savedPayment.selectedPaymentMethod || selectedPaymentMethod;
+
+    const dateLabel = document.getElementById('display-date');
+    if (dateLabel) {
+        if (selectedDate) {
+            const dateObj = new Date(selectedDate);
+            dateLabel.textContent = `${dateObj.getMonth() + 1}月${dateObj.getDate()}日`;
+        } else {
+            dateLabel.textContent = '请选择日期';
+        }
+    }
+
+    const timeLabel = document.getElementById('display-time');
+    if (timeLabel) {
+        timeLabel.textContent = selectedTime === 'morning'
+            ? '上午场'
+            : selectedTime === 'afternoon'
+                ? '下午场'
+                : '请选择时段';
+    }
+
+    ['adult', 'child', 'senior'].forEach(type => {
+        const el = document.getElementById(`${type}-count`);
+        if (el) el.textContent = ticketCounts[type] || 0;
+    });
+
+    updateTicketTotal();
+    updateBookingPage();
+    showPaymentSheet();
+}
+
+function continueBookingAfterQueue() {
+    bookingState = 'entry';
+    currentQueueId = null;
+    queuePosition = 0;
+    Storage.clearQueueState();
+    showMessage('排队成功！', 'success');
+    updateBookingPage();
+    showPaymentSheet();
+}
+
 // ========================================
 // 预约主流程
 // ========================================
@@ -1087,11 +1174,7 @@ function startQueueCountdown() {
                 if (result.completed) {
                     clearInterval(queueInterval);
                     queueInterval = null;
-                    bookingState = 'entry';
-                    currentQueueId = null;
-                    Storage.clearQueueState();
-                    showMessage('排队成功！', 'success');
-                    updateBookingPage();
+                    continueBookingAfterQueue();
                     return;
                 }
 
@@ -1124,11 +1207,7 @@ function startQueueCountdown() {
             if (queuePosition < 50 && Math.random() < 0.3) {
                 clearInterval(queueInterval);
                 queueInterval = null;
-                bookingState = 'entry';
-                currentQueueId = null;
-                Storage.clearQueueState();
-                showMessage('排队成功！', 'success');
-                updateBookingPage();
+                continueBookingAfterQueue();
                 return;
             }
 
@@ -1211,6 +1290,11 @@ function agreeAgreement() {
         unlockAchievement('agreement_reader');
     }
 
+    if (pendingAgreementContinuation && selectedDate) {
+        pendingAgreementContinuation = false;
+        loadTimeSlots();
+    }
+
     updateBookingPage();
 }
 
@@ -1218,6 +1302,7 @@ function agreeAgreement() {
 // 抽签系统
 // ========================================
 function showLotterySheet() {
+    Storage.clearPaymentState();
     document.getElementById('lottery-sheet').classList.add('show');
     document.getElementById('lottery-status').innerHTML = `
         <div class="lottery-ball-icon">🎱</div>
@@ -1332,6 +1417,12 @@ function showLotteryResult() {
 // 支付系统
 // ========================================
 function showPaymentSheet() {
+    if (!currentBookingId) {
+        const booking = createFallbackBooking();
+        currentBookingId = booking.id;
+        Storage.saveBooking(booking);
+    }
+
     const total = ticketCounts.adult * ticketPrices.adult +
                   ticketCounts.child * ticketPrices.child +
                   ticketCounts.senior * ticketPrices.senior;
@@ -1342,13 +1433,16 @@ function showPaymentSheet() {
     // 开始倒计时
     startPaymentCountdown();
 
+    persistPaymentState();
+
     // 初始化支付方式选择
     document.querySelectorAll('.payment-method').forEach((m, i) => {
-        m.classList.toggle('selected', i === 0);
+        m.classList.toggle('selected', m.dataset && m.dataset.method ? m.dataset.method === selectedPaymentMethod : i === 0);
     });
 }
 
 function closePaymentSheet() {
+    clearInterval(window._paymentTimer);
     document.getElementById('payment-sheet').classList.remove('show');
 }
 
@@ -1372,6 +1466,7 @@ function startPaymentCountdown() {
 
         if (timeLeft < 0) {
             clearInterval(timer);
+            Storage.clearPaymentState();
             closePaymentSheet();
             showMessage('支付超时，订单已取消，即将进入下一轮放票', 'error');
             setTimeout(startNextRound, 3000);
@@ -1455,6 +1550,7 @@ async function confirmPayment() {
             Storage.saveBooking(booking);
         }
     }
+    Storage.clearPaymentState();
 
     setTimeout(() => {
         closePaymentSheet();
@@ -1522,6 +1618,12 @@ function restartBooking() {
     ticketCounts = { adult: 0, child: 0, senior: 0 };
     selectedIdentity = null;
     bookingState = 'entry';
+    currentBookingId = null;
+    currentQueueId = null;
+    queuePosition = 0;
+    pendingAgreementContinuation = false;
+    Storage.clearQueueState();
+    Storage.clearPaymentState();
 
     document.getElementById('display-date').textContent = '请选择日期';
     document.getElementById('display-time').textContent = '请选择时段';
